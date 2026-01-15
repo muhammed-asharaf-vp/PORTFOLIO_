@@ -1,6 +1,6 @@
-import Preloader from "@/Components/PreLoader";
+import Preloader from "@/components/PreLoader";
 import "./globals.css";
-import SmoothScroll from "@/Components/SmoothComponents";
+import SmoothScroll from "@/components/SmoothComponents";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
 // 1. The SEO Configuration
