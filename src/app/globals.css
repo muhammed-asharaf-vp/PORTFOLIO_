@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-accent: var(--accent);
+  --color-card: var(--card-bg);
+  --color-border: var(--border-color);
+  --font-sans: system-ui, -apple-system, sans-serif;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #0a0a0a;
+  --accent: #2563eb; /* Professional Blue */
+  --card-bg: #f3f4f6;
+  --border-color: #e5e7eb;
+}
+
+.dark {
+  --background: #050505; /* Deep Void Black */
+  --foreground: #ffffff;
+  --accent: #ccff00; /* Gen Z Cyber Lime */
+  --card-bg: #111111;
+  --border-color: #222222;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  overflow-x: hidden; /* Critical for horizontal scroll */
+  transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out,
+    border-color 0.5s ease-in-out;
+}
+
+/* Hide Scrollbar for cleaner look */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Marquee Animation */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+.animate-marquee {
+  display: flex;
+  white-space: nowrap;
+  animation: marquee 30s linear infinite;
+}
