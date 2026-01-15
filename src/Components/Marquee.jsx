@@ -41,7 +41,7 @@ export default function Marquee() {
           ///
         </span>
 
-        <span className="text-5xl md:text-7xl font-black uppercase text-transparent text-stroke-accent tracking-tighter">
+        <span className="text-5xl md:text-7xl font-white uppercase text-transparent text-stroke-accent tracking-tighter">
           Clean Architecture
         </span>
 
