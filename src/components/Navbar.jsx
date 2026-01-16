@@ -55,7 +55,7 @@ export default function Navbar() {
       // 2. Create a temporary link to trigger download
       const link = document.createElement("a");
       link.href = "/resume.pdf"; // IMPORTANT: File must be in 'public' folder
-      link.download = "Mohammed_Rinshad_Resume.pdf"; // The name the user saves it as
+      link.download = "Mohamed_Asharaf_Resume.pdf"; // The name the user saves it as
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -80,10 +80,10 @@ export default function Navbar() {
         >
           <div className="flex flex-col transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:-translate-y-1/2">
             <span className="h-6 flex items-center font-black tracking-tighter uppercase text-lg leading-none">
-              Rinshad<span className="text-[var(--accent)]">.</span>
+              ASHARAF<span className="text-[var(--accent)]">.</span>
             </span>
             <span className="h-6 flex items-center font-black tracking-tighter uppercase text-lg leading-none text-[var(--accent)]">
-              Rinshad<span className="text-[var(--foreground)]">.</span>
+              ASHARAF<span className="text-[var(--foreground)]">.</span>
             </span>
           </div>
         </Link>

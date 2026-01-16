@@ -75,7 +75,7 @@ export default function Experience() {
             2025
           </h3>
           <span className="exp-content font-mono text-sm opacity-60 uppercase tracking-widest block mt-1">
-            Apr — Present
+            Jun — Present
           </span>
           <div className="exp-content mt-4 inline-block px-3 py-1 border border-[var(--accent)] rounded-full text-[10px] font-bold uppercase text-[var(--accent)]">
             Internship
@@ -90,19 +90,13 @@ export default function Experience() {
               Bridgeon
             </h3>
             <h4 className="exp-content text-xl md:text-2xl font-light text-[var(--foreground)] opacity-80">
-              Full Stack Developer Intern
+              Front End Developer Intern
             </h4>
           </div>
 
           {/* Description */}
           <p className="exp-content text-lg md:text-xl font-light leading-relaxed opacity-70 mb-12 max-w-3xl">
-            Operating within an Agile development team, I architect scalable
-            backend solutions using the .NET ecosystem. My daily workflow
-            involves translating complex business requirements into optimized
-            SQL queries and robust API endpoints. Beyond coding, I actively
-            participate in code reviews, manage CI/CD pipelines via GitHub
-            Actions, and ensure seamless integration between our ASP.NET Core
-            microservices and React frontends.
+            Operating within an Agile development team, I architect scalable and maintainable frontend applications using React and Next.js. My daily workflow involves translating complex product and UX requirements into performant, accessible user interfaces and reusable component systems. Beyond implementation, I actively participate in code reviews, collaborate closely with designers and backend teams, and manage build, deployment, and CI/CD workflows through GitHub Actions to ensure smooth and reliable frontend delivery.
           </p>
 
           {/* --- KEY DELIVERABLES (The 3 Projects as Tasks) --- */}

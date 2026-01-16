@@ -2,20 +2,20 @@ export default function Marquee() {
   return (
     <div className="py-10 bg-[var(--foreground)] overflow-hidden border-y border-[var(--border-color)]">
       <div className="animate-marquee flex items-center gap-16 whitespace-nowrap">
-        
+
         {/* 1. Solid Text */}
         <span className="text-5xl md:text-7xl font-black uppercase text-[var(--background)] tracking-tighter">
-          Building Scalable Systems
+          Building Scalable UI
         </span>
-        
-        {/* Divider: Code Slashes */}
+
+        {/* Divider */}
         <span className="text-4xl text-[var(--accent)] font-mono font-bold tracking-widest">
           ///
         </span>
 
-        {/* 2. Hollow/Outline Text */}
+        {/* 2. Outline Text */}
         <span className="text-5xl md:text-7xl font-black uppercase text-transparent text-stroke-accent tracking-tighter">
-          Clean Architecture
+          Component Architecture
         </span>
 
         <span className="text-4xl text-[var(--accent)] font-mono font-bold tracking-widest">
@@ -24,35 +24,35 @@ export default function Marquee() {
 
         {/* 3. Solid Text */}
         <span className="text-5xl md:text-7xl font-black uppercase text-[var(--background)] tracking-tighter">
-          High Performance
+          Smooth Performance
         </span>
 
         <span className="text-4xl text-[var(--accent)] font-mono font-bold tracking-widest">
           ///
         </span>
 
-        {/* --- REPEAT CONTENT (For smooth infinite loop) --- */}
-        
-        <span className="text-5xl md:text-7xl font-black uppercase text-[var(--background)] tracking-tighter">
-          Building Scalable Systems
-        </span>
-        
-        <span className="text-4xl text-[var(--accent)] font-mono font-bold tracking-widest">
-          ///
-        </span>
-
-        <span className="text-5xl md:text-7xl font-white uppercase text-transparent text-stroke-accent tracking-tighter">
-          Clean Architecture
-        </span>
-
-        <span className="text-4xl text-[var(--accent)] font-mono font-bold tracking-widest">
-          ///
-        </span>
+        {/* --- REPEAT FOR LOOP --- */}
 
         <span className="text-5xl md:text-7xl font-black uppercase text-[var(--background)] tracking-tighter">
-          High Performance
+          Building Scalable UI
         </span>
-        
+
+        <span className="text-4xl text-[var(--accent)] font-mono font-bold tracking-widest">
+          ///
+        </span>
+
+        <span className="text-5xl md:text-7xl font-black uppercase text-transparent text-stroke-accent tracking-tighter">
+          Component Architecture
+        </span>
+
+        <span className="text-4xl text-[var(--accent)] font-mono font-bold tracking-widest">
+          ///
+        </span>
+
+        <span className="text-5xl md:text-7xl font-black uppercase text-[var(--background)] tracking-tighter">
+          Smooth Performance
+        </span>
+
         <span className="text-4xl text-[var(--accent)] font-mono font-bold tracking-widest">
           ///
         </span>

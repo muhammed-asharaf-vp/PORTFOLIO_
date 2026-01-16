@@ -61,22 +61,27 @@ export default function About() {
 
   const specs = [
     {
-      label: "Core Stack",
-      value: "C#, ASP.NET Core, Entity Framework Core, Dapper",
+      label: "Core Framework",
+      value: "JavaScript (ES6+), React.js, Next.js",
     },
     {
-      label: "Frontend",
-      value: "React.js, JavaScript, Tailwind CSS, Context API",
+      label: "UI & Styling",
+      value: "Tailwind CSS, Responsive Design, CSS Animations",
     },
     {
-      label: "Data & Cloud",
-      value: "MS SQL Server, Azure SQL, Stored Procedures",
+      label: "Animation & 3D",
+      value: "GSAP, Three.js, Scroll-based Animations",
     },
     {
-      label: "DevOps",
-      value: "Microsoft Azure, Git, GitHub, CI/CD",
+      label: "State & Data",
+      value: "Context API, React Hooks, REST APIs",
+    },
+    {
+      label: "Tooling & Workflow",
+      value: "Git, GitHub, Vite, npm, CI/CD",
     },
   ];
+
   return (
     <section
       ref={container}
@@ -96,33 +101,42 @@ export default function About() {
           {/* 1. BIO */}
           <div>
             <h3 className="about-bio text-4xl md:text-7xl font-light leading-[1.1] text-[var(--foreground)] tracking-tighter mb-10">
-              Full Stack Developer architecting{" "}
+              Front End Developer{" "}
               <span className="text-[var(--accent)] font-normal">
-                scalable systems
+                scalable interfaces
               </span>{" "}
               with precision.
             </h3>
+
             <div className="about-bio grid grid-cols-1 md:grid-cols-2 gap-8 text-lg md:text-xl font-light opacity-70 leading-relaxed">
               <p>
-                [cite_start]Specializing in the Microsoft ecosystem, I build
-                robust RESTful APIs using{" "}
-                <strong className="text-[var(--foreground)] font-normal">
-                  ASP.NET Core
-                </strong>{" "}
-                and high-performance databases with{" "}
-                <strong className="text-[var(--foreground)] font-normal">
-                  SQL Server
-                </strong>
-                [cite: 14].
-              </p>
-              <p>
-                [cite_start]On the client side, I craft responsive, type-safe
-                interfaces using{" "}
+                [cite_start]I specialize in building modern, scalable user interfaces
+                using{" "}
                 <strong className="text-[var(--foreground)] font-normal">
                   React.js
                 </strong>{" "}
-                and modern CSS frameworks, ensuring a seamless user experience
-                from database to pixel[cite: 15].
+                and{" "}
+                <strong className="text-[var(--foreground)] font-normal">
+                  Next.js
+                </strong>
+                , focusing on performance, accessibility, and clean component
+                architecture[cite: 14].
+              </p>
+
+              <p>
+                [cite_start]I craft responsive, interactive experiences with{" "}
+                <strong className="text-[var(--foreground)] font-normal">
+                  Tailwind CSS
+                </strong>
+                , smooth animations powered by{" "}
+                <strong className="text-[var(--foreground)] font-normal">
+                  GSAP
+                </strong>{" "}
+                and immersive visuals using{" "}
+                <strong className="text-[var(--foreground)] font-normal">
+                  Three.js
+                </strong>
+                , ensuring polished interfaces from interaction to pixel[cite: 15].
               </p>
             </div>
           </div>

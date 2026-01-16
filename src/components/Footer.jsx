@@ -37,7 +37,7 @@ export default function Footer() {
 
       <div className="mt-20 flex flex-wrap justify-center gap-8 md:gap-16 text-sm font-bold uppercase tracking-widest">
         <a
-          href="https://www.linkedin.com/in/rinsh4dd"
+          href="https://www.linkedin.com/in/mohamed-asharaf-vp-63790a36b/?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
           target="_blank"
           rel="noopener noreferrer"
           className="hover:text-[var(--accent)] transition-colors relative group"
@@ -46,7 +46,7 @@ export default function Footer() {
           <span className="absolute -bottom-2 left-0 w-0 h-[2px] bg-[var(--accent)] group-hover:w-full transition-all duration-300" />
         </a>
         <a
-          href="https://github.com/rinsh4dd"
+          href="https://github.com/muhammed-asharaf-vp"
           target="_blank"
           rel="noopener noreferrer"
           className="hover:text-[var(--accent)] transition-colors relative group"
@@ -55,7 +55,7 @@ export default function Footer() {
           <span className="absolute -bottom-2 left-0 w-0 h-[2px] bg-[var(--accent)] group-hover:w-full transition-all duration-300" />
         </a>
         <a
-          href="https://instagram.com/rinsh4dd"
+          href="https://www.instagram.com/ashrrff._?utm_source=qr&igsh=bXN2MzUwNXljeHNp"
           target="_blank"
           rel="noopener noreferrer"
           className="hover:text-[var(--accent)] transition-colors relative group"
@@ -66,7 +66,7 @@ export default function Footer() {
       </div>
 
       <div className="mt-16 text-xs opacity-40 font-mono">
-        © 2026 Mohammed Rinshad. Built with Next.js &amp; GSAP.
+        © 2026 Mohamed Asharaf. Built with Next.js &amp; GSAP.
       </div>
     </footer>
   );

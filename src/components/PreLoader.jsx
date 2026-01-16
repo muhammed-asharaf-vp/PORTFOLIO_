@@ -34,12 +34,12 @@ export default function Preloader() {
       <div className="relative flex flex-col items-center">
         {/* Name with subtle glow */}
         <h1 className="text-4xl md:text-6xl font-black tracking-[0.2em] text-white uppercase animate-fade-in-up">
-          RINSHAD
+          ASHARAF
         </h1>
         
         {/* Job Title / Subtitle */}
         <p className="mt-2 text-xs md:text-sm text-gray-400 tracking-[0.5em] uppercase">
-          Full Stack Developer
+          Front End Developer
         </p>
 
         {/* Sleek Loading Line */}
@@ -48,7 +48,7 @@ export default function Preloader() {
 
       {/* Optional: Tech stack coordinates or minimal footer */}
       <div className="absolute bottom-10 text-[10px] text-gray-600 font-mono">
-        .NET CORE // REACT
+        Next.Js // REACT
       </div>
     </div>
   );
