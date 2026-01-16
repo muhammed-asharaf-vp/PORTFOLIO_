@@ -7,7 +7,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 
 // 1. The SEO Configuration
 export const metadata = {
-  metadataBase: new URL('https://Asharaf.com'), //UY: Replace with your actual domain later
+  metadataBase: new URL('https://asharaf.vercel.app'),
   title: {
     default: "Mohamed Asharaf VP | Front-End Developer | Next.js  | React | GSAP | Three.js | TypeScript ",
     template: "%s | Mohamed Asharaf VP"
