@@ -35,33 +35,27 @@ export default function Projects() {
       });
     });
   }, { scope: container });
+const projects = [
+  {
+    id: "01",
+    title: "Veloce",
+    category: "Premium Watch Showcase Website",
+    pitch:
+      "Interactive premium watch showcase website with a fully responsive layout, modular UI components, and smooth modern UI interactions.",
+    stack: ["React", "JavaScript", "Tailwind CSS", "HTML", "CSS"],
+    theme: "light",
+  },
+  {
+    id: "02",
+    title: "Chatloop",
+    category: "Secure Social Networking Platform",
+    pitch:
+      "Secure social networking platform supporting real-time messaging and content sharing with authentication, profile management, and safety-focused workflows.",
+    stack: ["Flutter", "Dart", "Python", "SQL", "Bootstrap"],
+    theme: "dark",
+  },
+];
 
-  const projects = [
-    {
-      id: "01",
-      title: "Smart Serve",
-      category: "Vehicle ERP System",
-      pitch: "A complete solution for Service Centers. Digitized job cards and inventory tracking, reducing manual processing time by 40%.",
-      stack: ["ASP.NET Core", "React", "Dapper", "SQL"],
-      theme: "light"
-    },
-    {
-      id: "02",
-      title: "Smart Desk",
-      category: "Office Management",
-      pitch: "SaaS-ready architecture. Manages 5+ office environments with strict Role-Based Access Control (RBAC) and subscription logic.",
-      stack: ["EF Core", "Redux", "Azure", "Clean Arch"],
-      theme: "dark"
-    },
-    {
-      id: "03",
-      title: "ShoeCart",
-      category: "E-Commerce Platform",
-      pitch: "High-performance shopping experience. Features real-time cart synchronization, dynamic filtering, and secure JWT authentication.",
-      stack: ["Web API", "React", "Auth", "SQL"],
-      theme: "light"
-    }
-  ];
 
   return (
     <section 
@@ -87,21 +81,25 @@ export default function Projects() {
       >
         
         {/* --- 1. INTRO CARD --- */}
-        <div className="w-full lg:w-[35vw] shrink-0 flex flex-col justify-center z-10">
-          <div className="mb-6 flex items-center gap-4">
-            <span className="w-12 h-[2px] bg-[var(--accent)]"></span>
-            <span className="font-mono text-sm uppercase tracking-widest text-[var(--accent)]">
-              Work Archive 2025
-            </span>
-          </div>
-          <h2 className="text-6xl md:text-9xl font-black text-[var(--foreground)] leading-[0.8] tracking-tighter uppercase">
-            Selected<br/>
-            <span className="text-transparent text-stroke-foreground">Works</span>
-          </h2>
-          <p className="mt-8 text-xl opacity-60 max-w-md font-light leading-relaxed">
-            Engineering scalable backends & interactive frontends using Clean Architecture.
-          </p>
-        </div>
+       <div className="w-full lg:w-[35vw] shrink-0 flex flex-col justify-center z-10">
+  <div className="mb-6 flex items-center gap-4">
+  <span className="w-12 h-[2px] bg-[var(--accent)]"></span>
+  <h1 className="font-mono md:text-5xl uppercase tracking-widest text-[var(--accent)]">
+    Projects
+  </h1>
+</div>
+
+<h2 className="text-6xl md:text-9xl font-black text-[var(--foreground)] leading-[0.8] tracking-tighter uppercase">
+  <br />
+  <span className="text-transparent text-stroke-foreground">Work</span>
+</h2>
+
+
+  <p className="mt-8 text-xl opacity-60 max-w-md font-light leading-relaxed">
+    Building responsive, high-performance frontends with React, Next.js, and modern UI systems.
+  </p>
+</div>
+
 
         {/* --- 2. PROJECTS LOOP --- */}
         {projects.map((project) => (
@@ -174,7 +172,7 @@ export default function Projects() {
         <div className="w-full lg:w-[40vw] flex flex-col items-center justify-center shrink-0 z-10 gap-8 py-20 lg:py-0">
              <div className="w-full h-[1px] bg-[var(--foreground)] opacity-20"></div>
              <p className="font-mono text-sm uppercase tracking-[0.2em] text-[var(--foreground)]">Have a concept?</p>
-             <a href="mailto:rinshadcontacts@gmail.com" className="text-7xl md:text-9xl font-black uppercase text-[var(--foreground)] hover:text-transparent hover:text-stroke-accent transition-all duration-300 cursor-pointer">
+             <a href="mailto:mohamedasharafvpp@gmail.com" className="text-7xl md:text-9xl font-black uppercase text-[var(--foreground)] hover:text-transparent hover:text-stroke-accent transition-all duration-300 cursor-pointer">
                Hire Me
              </a>
         </div>

@@ -7,35 +7,35 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 
 // 1. The SEO Configuration
 export const metadata = {
-  metadataBase: new URL('https://rinshad.com'), //UY: Replace with your actual domain later
+  metadataBase: new URL('https://Asharaf.com'), //UY: Replace with your actual domain later
   title: {
-    default: "Mohammed Rinshad | Full Stack Developer .NET & React",
-    template: "%s | Mohammed Rinshad"
+    default: "Mohamed Asharaf VP | Front-End Developer | Next.js  | React | GSAP | Three.js | TypeScript ",
+    template: "%s | Mohamed Asharaf VP"
   },
-  description: "Portfolio of Mohammed Rinshad, a Full Stack Developer from Tirur, Kerala. Expert in ASP.NET Core, React, and Clean Architecture.",
+  description: "Portfolio of Mohamed Asharaf VP, a Front-End Developer from Tirur, Kerala. Expert in React , React.",
   keywords: [
-    "Mohammed Rinshad", 
-    "Rinshad Developer", 
-    "Full Stack Developer Kerala", 
-    ".NET Developer Malappuram", 
+    "Mohamed Asharaf VP", 
+    "Asharaf Developer", 
+    "Front-End Developer Kerala", 
+    "React Developer Malappuram", 
     "React Developer Tirur", 
-    "ASP.NET Core Expert"
+    "React  Expert"
   ],
-  authors: [{ name: "Mohammed Rinshad" }],
-  creator: "Mohammed Rinshad",
+  authors: [{ name: "Mohamed Asharaf VP" }],
+  creator: "Mohamed Asharaf VP",
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://rinshad.com",
-    title: "Mohammed Rinshad - Full Stack Developer",
-    description: "Building scalable .NET & React applications. View my projects and experience.",
-    siteName: "Mohammed Rinshad Portfolio",
+    url: "https://Asharaf.com",
+    title: "Mohamed Asharaf VP - Front-End Developer",
+    description: "Building scalable React & React applications. View my projects and experience.",
+    siteName: "Mohamed Asharaf VP Portfolio",
     images: [
       {
         url: "/og-image.jpg", // We will create this image later
         width: 1200,
         height: 630,
-        alt: "Mohammed Rinshad Portfolio",
+        alt: "Mohamed Asharaf VP Portfolio",
       },
     ],
   },

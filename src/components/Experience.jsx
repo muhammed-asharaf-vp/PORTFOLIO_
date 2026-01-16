@@ -106,73 +106,49 @@ export default function Experience() {
             </h5>
 
             <div className="space-y-8">
-              {/* Deliverable 1: Smart Serve */}
-              <div className="group flex flex-col md:flex-row gap-6 hover:bg-[var(--card-bg)] p-6 -mx-6 rounded-2xl transition-colors duration-300">
-                <div className="w-12 h-12 flex items-center justify-center border border-[var(--border-color)] rounded-full text-[var(--accent)] font-bold shrink-0">
-                  01
-                </div>
-                <div>
-                  <h6 className="text-xl font-bold uppercase mb-2 group-hover:text-[var(--accent)] transition-colors">
-                    Smart Serve ERP
-                  </h6>
-                  <p className="text-sm md:text-base opacity-70 leading-relaxed mb-3">
-                    Built a comprehensive Vehicle Service Management System.
-                    Streamlined operations by digitizing job cards and inventory
-                    tracking, resulting in a 40% reduction in manual processing
-                    time.
-                  </p>
-                  <div className="flex gap-3 text-xs font-mono opacity-50 uppercase">
-                    <span>ASP.NET Core</span> <span>/</span> <span>Dapper</span>{" "}
-                    <span>/</span> <span>React</span>
-                  </div>
-                </div>
-              </div>
+  {/* Project 1: Veloce */}
+  <div className="group flex flex-col md:flex-row gap-6 hover:bg-[var(--card-bg)] p-6 -mx-6 rounded-2xl transition-colors duration-300">
+    <div className="w-12 h-12 flex items-center justify-center border border-[var(--border-color)] rounded-full text-[var(--accent)] font-bold shrink-0">
+      01
+    </div>
+    <div>
+      <h6 className="text-xl font-bold uppercase mb-2 group-hover:text-[var(--accent)] transition-colors">
+        Veloce – Premium Watch Showcase Website
+      </h6>
+      <p className="text-sm md:text-base opacity-70 leading-relaxed mb-3">
+        Designed and engineered an interactive premium watch showcase website
+        with a fully responsive layout. Built modular UI components and added
+        smooth UI interactions for a premium user experience.
+      </p>
+      <div className="flex gap-3 text-xs font-mono opacity-50 uppercase">
+        <span>React.js</span> <span>/</span> <span>JavaScript</span>{" "}
+        <span>/</span> <span>Tailwind CSS</span>
+      </div>
+    </div>
+  </div>
 
-              {/* Deliverable 2: Smart Desk */}
-              <div className="group flex flex-col md:flex-row gap-6 hover:bg-[var(--card-bg)] p-6 -mx-6 rounded-2xl transition-colors duration-300">
-                <div className="w-12 h-12 flex items-center justify-center border border-[var(--border-color)] rounded-full text-[var(--accent)] font-bold shrink-0">
-                  02
-                </div>
-                <div>
-                  <h6 className="text-xl font-bold uppercase mb-2 group-hover:text-[var(--accent)] transition-colors">
-                    Smart Desk System
-                  </h6>
-                  <p className="text-sm md:text-base opacity-70 leading-relaxed mb-3">
-                    Co-developed a SaaS-ready office system. Engineered the
-                    multi-tenant architecture with strict Role-Based Access
-                    Control (RBAC) to securely manage data across 5+ distinct
-                    office environments.
-                  </p>
-                  <div className="flex gap-3 text-xs font-mono opacity-50 uppercase">
-                    <span>EF Core</span> <span>/</span> <span>SQL Server</span>{" "}
-                    <span>/</span> <span>Redux</span>
-                  </div>
-                </div>
-              </div>
+  {/* Project 2: Chatloop */}
+  <div className="group flex flex-col md:flex-row gap-6 hover:bg-[var(--card-bg)] p-6 -mx-6 rounded-2xl transition-colors duration-300">
+    <div className="w-12 h-12 flex items-center justify-center border border-[var(--border-color)] rounded-full text-[var(--accent)] font-bold shrink-0">
+      02
+    </div>
+    <div>
+      <h6 className="text-xl font-bold uppercase mb-2 group-hover:text-[var(--accent)] transition-colors">
+        Chatloop – Secure Social Networking Platform
+      </h6>
+      <p className="text-sm md:text-base opacity-70 leading-relaxed mb-3">
+        Developed a secure social networking platform supporting real-time
+        messaging and content sharing. Implemented authentication, profile
+        management, and security-focused workflows for safe user interactions.
+      </p>
+      <div className="flex gap-3 text-xs font-mono opacity-50 uppercase">
+        <span>Flutter</span> <span>/</span> <span>Dart</span>{" "}
+        <span>/</span> <span>Python</span>
+      </div>
+    </div>
+  </div>
+</div>
 
-              {/* Deliverable 3: ShoeCart */}
-              <div className="group flex flex-col md:flex-row gap-6 hover:bg-[var(--card-bg)] p-6 -mx-6 rounded-2xl transition-colors duration-300">
-                <div className="w-12 h-12 flex items-center justify-center border border-[var(--border-color)] rounded-full text-[var(--accent)] font-bold shrink-0">
-                  03
-                </div>
-                <div>
-                  <h6 className="text-xl font-bold uppercase mb-2 group-hover:text-[var(--accent)] transition-colors">
-                    ShoeCart E-Commerce
-                  </h6>
-                  <p className="text-sm md:text-base opacity-70 leading-relaxed mb-3">
-                    Developed a high-performance shopping platform. Focused on
-                    state management efficiency using Redux for real-time cart
-                    updates and implemented secure JWT authentication for user
-                    sessions.
-                  </p>
-                  <div className="flex gap-3 text-xs font-mono opacity-50 uppercase">
-                    <span>Web API</span> <span>/</span>{" "}
-                    <span>Authentication</span> <span>/</span>{" "}
-                    <span>React</span>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>

@@ -12,7 +12,7 @@ export default function Footer() {
 
       {/* Arrow + Text */}
       <a
-        href="mailto:rinshadcontacts@gmail.com"
+        href="mailto:mohamedasharafvpp@gmail.com"
         className="group relative inline-flex items-center gap-4 cursor-pointer"
       >
         <span className="text-[12vw] font-black uppercase leading-[0.8] tracking-tighter text-[var(--foreground)] transition-colors duration-300 group-hover:text-[var(--accent)]">

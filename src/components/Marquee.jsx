@@ -14,7 +14,7 @@ export default function Marquee() {
         </span>
 
         {/* 2. Outline Text */}
-        <span className="text-5xl md:text-7xl font-black uppercase text-transparent text-stroke-accent tracking-tighter">
+        <span className="text-5xl md:text-7xl font-black uppercase text-[var(--accent)]  text-stroke-accent tracking-tighter">
           Component Architecture
         </span>
 

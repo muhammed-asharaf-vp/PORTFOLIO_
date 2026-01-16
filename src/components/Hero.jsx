@@ -45,8 +45,8 @@ export default function Hero() {
 
       <div className="flex flex-wrap gap-3 mt-12">
         {/* Updated skills based on Resume [cite: 14, 15, 16, 17] */}
-        {['HTML','CSS','React.js','Java Script', 'Gsap', 'Three.Js','TailWind CSS', 'BootStrap','TypeScript','Next.Js'].map((tech) => (
-          <span key={tech} className="hero-pill px-6 py-3 border border-[var(--border-color)] rounded-full text-sm font-bold uppercase hover:bg-[var(--accent)] hover:border-[var(--accent)] transition-colors cursor-default">
+        {['React.js', 'Gsap', 'Three.Js','TailWind CSS', 'BootStrap','TypeScript','Next.Js'].map((tech) => (
+          <span key={tech} className="hero-pill px-6 py-3 border border-[var(--border-color)] rounded-full text-sm font-bold uppercase hover:text-[#000000] hover:bg-[var(--accent)] hover:border-[var(--accent)] transition-colors cursor-default">
             {tech}
           </span>
         ))}
