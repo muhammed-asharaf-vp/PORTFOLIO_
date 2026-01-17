@@ -4,6 +4,6 @@ export default function robots() {
       userAgent: '*',
       allow: '/',
     },
-    sitemap: 'https://rinshad.com/sitemap.xml',
+    sitemap: 'https://asharaf.com/sitemap.xml',
   }
 }

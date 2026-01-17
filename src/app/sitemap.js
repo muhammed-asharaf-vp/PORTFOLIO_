@@ -1,15 +1,15 @@
 export default function sitemap() {
   return [
     {
-      url: 'https://rinshad.com',
+      url: "https://asharaf.com",
       lastModified: new Date(),
-      changeFrequency: 'yearly',
+      changeFrequency: "yearly",
       priority: 1,
     },
     {
-      url: 'https://rinshad.com/projects',
+      url: "https://asharaf.com/projects",
       lastModified: new Date(),
-      changeFrequency: 'monthly',
+      changeFrequency: "monthly",
       priority: 0.8,
     },
   ]
