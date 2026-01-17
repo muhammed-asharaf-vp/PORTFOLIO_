@@ -75,9 +75,7 @@ export default function Projects() {
         }}
       ></div>
 
-      {/* PERFORMANCE FIX: 
-         Added 'will-change-transform' to hint browser about movement.
-      */}
+      {/* PERFORMANCE FIX:*/}
       <div
         ref={scrollContainer}
         className="relative z-10 flex flex-col lg:flex-row gap-12 lg:gap-24 px-6 lg:px-24 items-center h-full py-20 lg:py-0 will-change-transform"
