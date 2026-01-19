@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* Tailwind layers (always keep this order) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ================= THEME TOKENS ================= */
 @theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -9,32 +15,61 @@
   --font-sans: system-ui, -apple-system, sans-serif;
 }
 
+/* ================= LIGHT MODE ================= */
 :root {
   --background: #ffffff;
   --foreground: #0a0a0a;
   --accent: #2563eb; /* Professional Blue */
   --card-bg: #f3f4f6;
   --border-color: #e5e7eb;
+
+  /* Extra theme variables */
+  --marquee-bg: #ffffff;
+  --glass-stroke: rgba(0, 0, 0, 0.4);
+  --glass-grad-start: rgba(0, 0, 0, 0.6);
+  --glass-dot: rgba(0, 0, 0, 0.2);
+  --glass-glow: rgba(0, 0, 0, 0.5);
 }
 
+/* ================= DARK MODE ================= */
 .dark {
   --background: #050505; /* Deep Void Black */
   --foreground: #ffffff;
   --accent: #ccff00; /* Gen Z Cyber Lime */
   --card-bg: #111111;
   --border-color: #222222;
+
+  /* Extra theme variables */
+  --marquee-bg: #000000;
+  --glass-stroke: rgba(255, 255, 255, 0.3);
+  --glass-grad-start: rgba(255, 255, 255, 0.5);
+  --glass-dot: rgba(255, 255, 255, 0.2);
+  --glass-glow: rgba(255, 255, 255, 0.6);
+}
+
+/* ================= GLOBAL BODY ================= */
+html,
+body {
+  overflow-x: hidden;
+  position: relative;
+  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
-  overflow-x: hidden; /* Critical for horizontal scroll */
   transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out,
     border-color 0.5s ease-in-out;
 }
 
-/* Hide Scrollbar for cleaner look */
+/* Hide Scrollbar utility */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -43,36 +78,77 @@ body {
   scrollbar-width: none;
 }
 
-/* Marquee Animation */
+/* ================= MARQUEE ANIMATION ================= */
 @keyframes marquee {
   0% {
-    transform: translateX(0);
+    transform: translateX(0%);
   }
   100% {
     transform: translateX(-50%);
   }
 }
+
+/* Desktop speed */
 .animate-marquee {
-  display: flex;
-  white-space: nowrap;
-  animation: marquee 30s linear infinite;
+  animation: marquee 18s linear infinite;
 }
-/* @keyframes slide-up {
-  0% { transform: translateY(100%); }
-  100% { transform: translateY(0); }
-}
-.animate-slide-up {
-  animation: slide-up 0.8s cubic-bezier(0.76, 0, 0.24, 1) forwards;
-} */
 
-/* 
-@keyframes slide-up {
-  0% { transform: translateY(100%); }
-  100% { transform: translateY(0); }
+/* Mobile speed */
+.animate-marquee-mobile {
+  animation: marquee 24s linear infinite;
 }
-.animate-slide-up {
-  animation: slide-up 0.8s cubic-bezier(0.76, 0, 0.24, 1) forwards;
-}
-  
-*/
 
+/* ================= TEXT STROKE ================= */
+.text-stroke-accent {
+  -webkit-text-stroke: 2px var(--accent);
+}
+
+/* ================= NEXT ROOT ================= */
+#__next {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+#__next::-webkit-scrollbar {
+  display: none;
+}
+
+/* ================= CUSTOM CURSOR ================= */
+@media (min-width: 1024px) {
+  * {
+    cursor: none !important;
+  }
+
+  .custom-line-cursor {
+    width: 2px;
+    height: 18px;
+    background: var(--accent);
+    border-radius: 999px;
+
+    transform: translate3d(-50%, -50%, 0);
+    opacity: 0.9;
+
+    transition: width 180ms ease, height 180ms ease, opacity 180ms ease,
+      filter 180ms ease;
+
+    mix-blend-mode: difference;
+  }
+
+  .custom-line-cursor.cursor-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    opacity: 1;
+    filter: drop-shadow(0 0 12px var(--accent));
+  }
+}
+
+@media (max-width: 1023px) {
+  .custom-line-cursor {
+    display: none;
+  }
+}
+
+section {
+  overflow-x: hidden;
+}

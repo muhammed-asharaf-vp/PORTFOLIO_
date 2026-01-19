@@ -1,236 +1,486 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
-import { FiTarget, FiCpu, FiActivity, FiCrosshair, FiRefreshCw } from "react-icons/fi";
+import { FiRefreshCw, FiType } from "react-icons/fi";
 
-export default function ReflexGame() {
+const DIFFICULTIES = {
+  easy: {
+    label: "Easy",
+    duration: 30,
+    minWords: 6,
+    maxWords: 10,
+  },
+  medium: {
+    label: "Medium",
+    duration: 25,
+    minWords: 10,
+    maxWords: 14,
+  },
+  hard: {
+    label: "Hard",
+    duration: 20,
+    minWords: 14,
+    maxWords: 22,
+  },
+};
+
+export default function TypingSpeedGame() {
+  const inputRef = useRef(null);
   const containerRef = useRef(null);
-  const targetRef = useRef(null);
 
-  // --- Game State ---
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [gameOver, setGameOver] = useState(false);
-  
-  // Stats
-  const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(30); // 30 seconds round
-  const [highScore, setHighScore] = useState(0);
-  
-  // Reflex Logic
-  const [targetPos, setTargetPos] = useState({ top: "50%", left: "50%" });
-  const [spawnTime, setSpawnTime] = useState(0); // When the target appeared
-  const [reactionTimes, setReactionTimes] = useState([]); // Store all clicks
-  const [avgReflex, setAvgReflex] = useState(0); // Average MS
+  const texts = useMemo(
+    () => [
+      "build clean scalable ui with reusable components",
+      "react next js tailwind gsap for modern frontends",
+      "performance accessibility and pixel perfect design",
+      "ship fast test often and keep code readable",
+      "frontend developer crafting smooth user experiences",
+      "optimize rendering and reduce unnecessary re-renders",
+      "design systems tokens spacing and consistent typography",
+      "animations should feel smooth not heavy and not distracting",
+      "focus on user experience speed clarity and accessibility",
+      "write maintainable code with clear naming and structure",
+    ],
+    [],
+  );
 
-  // --- Timer Logic ---
+  // ---------------- STATE ----------------
+  const [difficulty, setDifficulty] = useState("easy");
+  const duration = DIFFICULTIES[difficulty].duration;
+
+  const [quote, setQuote] = useState("");
+  const [typed, setTyped] = useState("");
+
+  const [isPlaying, setIsPlaying] = useState(false); // timer running
+  const [isOver, setIsOver] = useState(false);
+
+  // 👇 NEW: game ready but timer not started until first key press
+  const [hasStartedTyping, setHasStartedTyping] = useState(false);
+
+  const [timeLeft, setTimeLeft] = useState(duration);
+
+  const [wpm, setWpm] = useState(0);
+  const [accuracy, setAccuracy] = useState(100);
+
+  const [bestWpm, setBestWpm] = useState(0);
+
+  // ---------------- BEST SCORE PER DIFFICULTY ----------------
   useEffect(() => {
-    let interval;
-    if (isPlaying && timeLeft > 0) {
-      interval = setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
-      }, 1000);
-    } else if (timeLeft === 0) {
-      endGame();
-    }
-    return () => clearInterval(interval);
-  }, [isPlaying, timeLeft]);
+    const saved = Number(
+      localStorage.getItem(`typing_best_wpm_${difficulty}`) || 0,
+    );
+    setBestWpm(saved);
+  }, [difficulty]);
 
-  // --- Game Functions ---
+  // ---------------- HELPERS ----------------
+  const pickQuote = () => {
+    const { minWords, maxWords } = DIFFICULTIES[difficulty];
 
+    const filtered = texts.filter((t) => {
+      const wc = t.split(" ").length;
+      return wc >= minWords && wc <= maxWords;
+    });
+
+    const pool = filtered.length ? filtered : texts;
+    const random = pool[Math.floor(Math.random() * pool.length)];
+    setQuote(random);
+  };
+
+  // ---------------- GAME ----------------
   const startGame = () => {
-    setIsPlaying(true);
-    setGameOver(false);
-    setScore(0);
-    setTimeLeft(30);
-    setReactionTimes([]);
-    setAvgReflex(0);
-    moveTarget();
+    pickQuote();
+    setTyped("");
+    setWpm(0);
+    setAccuracy(100);
+
+    setTimeLeft(duration);
+
+    // 👇 important changes
+    setHasStartedTyping(false); // timer not started yet
+    setIsPlaying(false); // timer OFF until first key press
+    setIsOver(false);
+
+    gsap.fromTo(
+      containerRef.current,
+      { scale: 0.98, opacity: 0.7 },
+      { scale: 1, opacity: 1, duration: 0.35, ease: "power3.out" },
+    );
+
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
   };
 
   const endGame = () => {
     setIsPlaying(false);
-    setGameOver(true);
-    if (score > highScore) setHighScore(score);
-  };
+    setIsOver(true);
 
-  const moveTarget = () => {
-    if (!containerRef.current) return;
+    setBestWpm((prev) => {
+      const newBest = Math.max(prev, wpm);
+      localStorage.setItem(`typing_best_wpm_${difficulty}`, String(newBest));
+      return newBest;
+    });
 
-    // 1. Calculate Random Position (10% to 90% to avoid edges)
-    const x = Math.random() * 80 + 10;
-    const y = Math.random() * 80 + 10;
-    setTargetPos({ top: `${y}%`, left: `${x}%` });
-
-    // 2. Record Spawn Time for Reflex Calculation
-    setSpawnTime(Date.now());
-
-    // 3. Animation: Pop In
-    gsap.fromTo(targetRef.current,
-      { scale: 0, opacity: 0 },
-      { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(2)" }
+    gsap.fromTo(
+      ".result-pop",
+      { y: 10, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.35, ease: "power3.out", stagger: 0.08 },
     );
   };
 
-  const handleHit = (e) => {
-    e.stopPropagation(); // Prevent clicking container
-    
-    // 1. Calculate Reflex
-    const reactionTime = Date.now() - spawnTime;
-    const newHistory = [...reactionTimes, reactionTime];
-    setReactionTimes(newHistory);
-    
-    // Calculate Average
-    const avg = Math.round(newHistory.reduce((a, b) => a + b, 0) / newHistory.length);
-    setAvgReflex(avg);
+  // ---------------- TIMER ----------------
+  useEffect(() => {
+    let interval;
 
-    // 2. Increase Score
-    setScore((prev) => prev + 1);
-
-    // 3. Animation: Pop Out (Glitch effect)
-    gsap.to(targetRef.current, {
-      scale: 1.5,
-      opacity: 0,
-      duration: 0.1,
-      onComplete: () => {
-        moveTarget(); // Move immediately after hit
-      }
-    });
-  };
-
-  const handleMiss = () => {
-    if (isPlaying) {
-      // Optional: Penalty for missing
-      // setScore(prev => Math.max(0, prev - 1));
-      
-      // Visual Feedback for miss
-      gsap.to(containerRef.current, {
-        backgroundColor: "rgba(239, 68, 68, 0.1)", // Red flash
-        duration: 0.1,
-        yoyo: true,
-        repeat: 1,
-        onComplete: () => {
-            gsap.set(containerRef.current, { backgroundColor: "transparent" });
-        }
-      });
+    if (isPlaying && timeLeft > 0) {
+      interval = setInterval(() => setTimeLeft((t) => t - 1), 1000);
     }
+
+    if (isPlaying && timeLeft === 0) {
+      endGame();
+    }
+
+    return () => clearInterval(interval);
+  }, [isPlaying, timeLeft]);
+
+  // reset when difficulty changes (only if not playing)
+  useEffect(() => {
+    if (!isPlaying) {
+      setTimeLeft(duration);
+      setTyped("");
+      setQuote("");
+      setWpm(0);
+      setAccuracy(100);
+      setIsOver(false);
+      setHasStartedTyping(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [difficulty]);
+
+  // ---------------- CALCULATE WPM + ACC ----------------
+  useEffect(() => {
+    if (!isPlaying) return;
+
+    const elapsed = duration - timeLeft;
+    const minutes = elapsed / 60;
+
+    const correctChars = typed
+      .split("")
+      .filter((ch, i) => ch === quote[i]).length;
+
+    const words = correctChars / 5;
+    const calcWpm = minutes > 0 ? Math.round(words / minutes) : 0;
+    setWpm(calcWpm);
+
+    const totalTyped = typed.length;
+    const acc =
+      totalTyped > 0 ? Math.round((correctChars / totalTyped) * 100) : 100;
+    setAccuracy(acc);
+
+    if (typed.length >= quote.length && quote.length > 0) {
+      endGame();
+    }
+  }, [typed, timeLeft, isPlaying, quote, duration]);
+
+  // ---------------- INPUT HANDLER ----------------
+  const handleTyping = (value) => {
+    // do nothing if game is over
+    if (isOver) return;
+
+    // first key press => start timer
+    if (!hasStartedTyping && quote.length > 0) {
+      setHasStartedTyping(true);
+      setIsPlaying(true);
+    }
+
+    setTyped(value);
   };
+
+  // ---------------- RENDER QUOTE ----------------
+  const renderQuote = () =>
+    quote.split("").map((ch, i) => {
+      const typedChar = typed[i];
+
+      let className = "opacity-50";
+      if (typedChar == null) className = "opacity-40";
+      else if (typedChar === ch) className = "text-[var(--accent)]";
+      else className = "text-red-500";
+
+      return (
+        <span key={i} className={className}>
+          {ch}
+        </span>
+      );
+    });
 
   return (
-    <section className="relative w-full py-24 px-4 overflow-hidden bg-neutral-950 text-white select-none">
-      
-      {/* Background Decor */}
-      <div className="absolute inset-0 opacity-[0.05] pointer-events-none"
-           style={{ backgroundImage: 'radial-gradient(#06b6d4 1px, transparent 1px)', backgroundSize: '20px 20px' }}>
-      </div>
+    <section className="relative w-full py-24 px-4 bg-[var(--background)] text-[var(--foreground)] overflow-hidden select-none">
+      {/* Background */}
+      <div
+        className="absolute inset-0 opacity-[0.05] pointer-events-none"
+        style={{
+          backgroundImage:
+            "radial-gradient(var(--accent) 1px, transparent 1px)",
+          backgroundSize: "22px 22px",
+        }}
+      />
 
-      <div className="max-w-4xl mx-auto relative z-10">
-        
-        {/* Header Section */}
-        <div className="text-center mb-8">
-          
-            <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-white">
-                Reflex <span className="text-transparent bg-clip-text bg-[#ccff00]">Trainer</span>
-            </h2>
+      <div ref={containerRef} className="max-w-5xl mx-auto relative z-10">
+        {/* Title */}
+        <div className="text-center mb-10">
+          <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter">
+            Typing <span className="text-[var(--accent)]">Speed</span>
+          </h2>
+          <p className="mt-3 text-sm md:text-base opacity-70">
+            Select difficulty and beat your best WPM.
+          </p>
         </div>
 
-        {/* --- GAME BOARD --- */}
-        <div 
-            className="relative w-full flex flex-col gap-4"
-        >
-            {/* HUD / Stats Bar */}
-            <div className="flex justify-between items-center p-4 bg-neutral-900/80 border border-neutral-800 rounded-t-xl backdrop-blur-md font-mono text-sm">
-                <div className="flex gap-6">
-                    <div className="flex flex-col">
-                        <span className="text-gray-500 text-[10px] uppercase">Score</span>
-                        <span className="text-xl font-bold text-white">{score}</span>
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="text-gray-500 text-[10px] uppercase">Avg Speed</span>
-                        <span className="text-xl font-bold text-[#ccff00]">{avgReflex > 0 ? `${avgReflex}ms` : '--'}</span>
-                    </div>
-                </div>
-                
-                <div className="text-right">
-                    <span className="text-gray-500 text-[10px] uppercase block">Time Left</span>
-                    <span className={`text-xl font-bold ${timeLeft <= 5 ? 'text-red-500 animate-pulse' : 'text-white'}`}>
-                        00:{timeLeft < 10 ? `0${timeLeft}` : timeLeft}
-                    </span>
-                </div>
-            </div>
-
-            {/* Interactive Area */}
-            <div 
-                ref={containerRef}
-                onClick={handleMiss}
-                className="relative w-full h-[400px] md:h-[500px] bg-neutral-900 border border-neutral-800 rounded-b-xl overflow-hidden cursor-crosshair shadow-2xl"
-            >
-                {/* Background Grid inside board */}
-                <div className="absolute inset-0 opacity-10 pointer-events-none" 
-                     style={{ backgroundImage: 'linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)', backgroundSize: '50px 50px' }}>
-                </div>
-
-                {/* --- START OVERLAY --- */}
-                {!isPlaying && !gameOver && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm z-20">
-                         <button 
-                            onClick={startGame}
-                            className="group relative px-8 py-3 bg-[#ccff00] text-black font-bold uppercase tracking-widest hover:bg-[#ccbb00] transition-all hover:scale-105 active:scale-95"
-                        >
-                            <span className="flex items-center gap-2"><FiCrosshair /> Initialize</span>
-                        </button>
-                        <p className="mt-4 text-xs text-gray-400 font-mono">Click targets to calibrate reflexes.</p>
-                    </div>
-                )}
-
-                {/* --- GAME OVER OVERLAY --- */}
-                {gameOver && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 backdrop-blur-md z-30 animate-in fade-in duration-300">
-                        <h3 className="text-3xl font-bold text-white mb-1">SESSION COMPLETE</h3>
-                        <p className="text-[#ccff00] font-mono text-sm mb-6">High Score: {highScore}</p>
-                        
-                        <div className="grid grid-cols-2 gap-4 mb-8 w-64">
-                            <div className="bg-neutral-800 p-3 rounded text-center">
-                                <div className="text-[10px] text-gray-500 uppercase">Hits</div>
-                                <div className="text-xl font-bold">{score}</div>
-                            </div>
-                            <div className="bg-neutral-800 p-3 rounded text-center">
-                                <div className="text-[10px] text-gray-500 uppercase">Avg Reflex</div>
-                                <div className="text-xl font-bold text-[#ccff00]">{avgReflex}ms</div>
-                            </div>
-                        </div>
-
-                        <button 
-                            onClick={startGame}
-                            className="flex items-center gap-2 px-6 py-2 border border-white/20 text-white hover:bg-white hover:text-black transition-colors uppercase text-sm font-bold tracking-wider"
-                        >
-                            <FiRefreshCw /> Re-Calibrate
-                        </button>
-                    </div>
-                )}
-
-                {/* --- THE TARGET --- */}
+        {/* Difficulty Selector */}
+        <div className="flex justify-center mb-8">
+          <div className="flex gap-2 p-2 rounded-2xl border border-[var(--border-color)] bg-[var(--card-bg)]">
+            {Object.keys(DIFFICULTIES).map((key) => {
+              const active = difficulty === key;
+              return (
                 <button
-                    ref={targetRef}
-                    onClick={handleHit}
-                    style={{ 
-                        top: targetPos.top, 
-                        left: targetPos.left,
-                        display: isPlaying ? 'flex' : 'none'
-                    }}
-                    className="absolute w-16 h-16 -ml-8 -mt-8 items-center justify-center rounded-full group cursor-pointer active:scale-95"
+                  key={key}
+                  disabled={isPlaying}
+                  onClick={() => setDifficulty(key)}
+                  className={`cursor-dot-zone px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition ${
+                    active
+                      ? "bg-[var(--accent)] text-black"
+                      : "border border-[var(--border-color)] hover:border-[var(--accent)]"
+                  } ${isPlaying ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
-                    {/* Outer Ring */}
-                    <div className="absolute inset-0 rounded-full border-2 border-[#ccff00] opacity-50 animate-ping"></div>
-                    {/* Core */}
-                    <div className="w-12 h-12 bg-[#ccff00] rounded-full shadow-[0_0_15px_rgba(6,182,212,0.6)] flex items-center justify-center text-black">
-                        <FiTarget className="text-xl" />
-                    </div>
+                  {DIFFICULTIES[key].label}
                 </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ---------------- DESKTOP UI ---------------- */}
+        <div className="hidden md:grid grid-cols-12 gap-6">
+          {/* Left HUD */}
+          <div className="col-span-4">
+            <div className="rounded-3xl border border-[var(--border-color)] bg-[var(--card-bg)] backdrop-blur-md p-6">
+              <h3 className="text-sm font-mono uppercase tracking-widest opacity-70 mb-5 flex items-center gap-2">
+                <FiType /> Session HUD
+              </h3>
+
+              <div className="grid grid-cols-2 gap-4">
+                <Stat label="WPM" value={wpm} accent />
+                <Stat label="Accuracy" value={`${accuracy}%`} />
+                <Stat
+                  label="Time"
+                  value={`00:${timeLeft < 10 ? `0${timeLeft}` : timeLeft}`}
+                  danger={timeLeft <= 5 && isPlaying}
+                />
+                <Stat label="Best" value={bestWpm} />
+              </div>
+
+              <div className="mt-6 flex gap-3">
+                {!quote ? (
+                  <button
+                    onClick={startGame}
+                    className="cursor-dot-zone w-full px-6 py-3 bg-[var(--accent)] text-black font-bold uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition"
+                  >
+                    Start
+                  </button>
+                ) : (
+                  <button
+                    onClick={startGame}
+                    className="cursor-dot-zone w-full px-6 py-3 border border-[var(--border-color)] font-bold uppercase tracking-widest hover:bg-[var(--foreground)] hover:text-[var(--background)] transition"
+                  >
+                    <span className="flex items-center justify-center gap-2 pointer-events-none">
+                      <FiRefreshCw /> Restart
+                    </span>
+                  </button>
+                )}
+              </div>
+
+              {/* 👇 show this when quote is ready but timer not started */}
+              {quote && !hasStartedTyping && !isOver && (
+                <p className="mt-4 text-xs font-mono uppercase tracking-widest opacity-60">
+                  Press any key to start...
+                </p>
+              )}
+
+              {isOver && (
+                <div className="mt-6 space-y-2">
+                  <p className="result-pop text-xs font-mono uppercase tracking-widest opacity-60">
+                    Session Complete
+                  </p>
+                  <p className="result-pop text-lg font-bold text-[var(--accent)]">
+                    {wpm} WPM • {accuracy}% Accuracy
+                  </p>
+                </div>
+              )}
             </div>
+          </div>
+
+          {/* Right Game */}
+          <div className="col-span-8">
+            <div className="rounded-3xl border border-[var(--border-color)] bg-[var(--card-bg)] backdrop-blur-md p-6">
+              {/* Quote */}
+              <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--background)]/40 p-6 font-mono text-lg leading-relaxed">
+                {quote ? (
+                  renderQuote()
+                ) : (
+                  <span className="opacity-40">Click Start to begin...</span>
+                )}
+              </div>
+
+              {/* Input */}
+              <div className="mt-6">
+                <input
+                  ref={inputRef}
+                  value={typed}
+                  onChange={(e) => handleTyping(e.target.value)}
+                  disabled={!quote || isOver}
+                  placeholder={
+                    !quote
+                      ? "Press Start"
+                      : hasStartedTyping
+                        ? "Start typing here..."
+                        : "Press any key to start..."
+                  }
+                  className="cursor-dot-zone w-full px-5 py-4 rounded-2xl bg-[var(--background)] border border-[var(--border-color)] focus:outline-none focus:border-[var(--accent)] font-mono text-base"
+                />
+              </div>
+
+              <p className="mt-4 text-xs opacity-50">
+                Tip: Accuracy first, then speed. Difficulty changes time + quote
+                length.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* ---------------- MOBILE UI ---------------- */}
+        <div className="block md:hidden">
+          <div className="rounded-3xl border border-[var(--border-color)] bg-[var(--card-bg)] backdrop-blur-md p-5">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-xs font-mono uppercase tracking-widest opacity-70">
+                Typing Session
+              </p>
+
+              <span
+                className={`text-xs font-mono uppercase tracking-widest ${
+                  timeLeft <= 5 && isPlaying
+                    ? "text-red-500 animate-pulse"
+                    : "opacity-70"
+                }`}
+              >
+                00:{timeLeft < 10 ? `0${timeLeft}` : timeLeft}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-3 gap-3 mb-4">
+              <MiniStat label="WPM" value={wpm} accent />
+              <MiniStat label="ACC" value={`${accuracy}%`} />
+              <MiniStat label="BEST" value={bestWpm} />
+            </div>
+
+            {!quote ? (
+              <button
+                onClick={startGame}
+                className="cursor-dot-zone w-full px-6 py-3 bg-[var(--accent)] text-black font-bold uppercase tracking-widest active:scale-95 transition"
+              >
+                Start
+              </button>
+            ) : (
+              <button
+                onClick={startGame}
+                className="cursor-dot-zone w-full px-6 py-3 border border-[var(--border-color)] font-bold uppercase tracking-widest hover:bg-[var(--foreground)] hover:text-[var(--background)] transition"
+              >
+                <span className="flex items-center justify-center gap-2 pointer-events-none">
+                  <FiRefreshCw /> Restart
+                </span>
+              </button>
+            )}
+
+            {quote && !hasStartedTyping && !isOver && (
+              <p className="mt-3 text-[11px] font-mono uppercase tracking-widest opacity-60 text-center">
+                Press any key to start...
+              </p>
+            )}
+          </div>
+
+          <div className="mt-5 rounded-3xl border border-[var(--border-color)] bg-[var(--card-bg)] backdrop-blur-md p-5">
+            <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--background)]/40 p-5 font-mono text-base leading-relaxed">
+              {quote ? (
+                renderQuote()
+              ) : (
+                <span className="opacity-40">Tap Start to begin...</span>
+              )}
+            </div>
+
+            <input
+              ref={inputRef}
+              value={typed}
+              onChange={(e) => handleTyping(e.target.value)}
+              disabled={!quote || isOver}
+              placeholder={
+                !quote
+                  ? "Press Start"
+                  : hasStartedTyping
+                    ? "Type here..."
+                    : "Press any key to start..."
+              }
+              className="cursor-dot-zone mt-4 w-full px-4 py-4 rounded-2xl bg-[var(--background)] border border-[var(--border-color)] focus:outline-none focus:border-[var(--accent)] font-mono text-sm"
+            />
+
+            {isOver && (
+              <div className="mt-4">
+                <p className="result-pop text-xs font-mono uppercase tracking-widest opacity-60">
+                  Session Complete
+                </p>
+                <p className="result-pop text-base font-bold text-[var(--accent)]">
+                  {wpm} WPM • {accuracy}% Accuracy
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </section>
+  );
+}
+
+/* ---------------- UI COMPONENTS ---------------- */
+
+function Stat({ label, value, accent, danger }) {
+  return (
+    <div className="flex items-center gap-3 px-4 py-3 bg-[var(--background)]/40 border border-[var(--border-color)] rounded-2xl">
+      <div className="flex flex-col leading-tight">
+        <span className="text-[10px] uppercase tracking-widest opacity-50">
+          {label}
+        </span>
+        <span
+          className={`text-lg font-bold ${
+            accent ? "text-[var(--accent)]" : ""
+          } ${danger ? "text-red-500 animate-pulse" : ""}`}
+        >
+          {value}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function MiniStat({ label, value, accent }) {
+  return (
+    <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--background)]/40 px-3 py-3 text-center">
+      <p className="text-[10px] font-mono uppercase tracking-widest opacity-50">
+        {label}
+      </p>
+      <p
+        className={`text-lg font-bold ${accent ? "text-[var(--accent)]" : ""}`}
+      >
+        {value}
+      </p>
+    </div>
   );
 }

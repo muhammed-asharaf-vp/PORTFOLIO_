@@ -15,7 +15,7 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="fixed top-6 right-6 z-50 p-3 rounded-full 
+      className="cursor-dot-zone fixed top-6 right-6 z-50 p-3 rounded-full 
                  bg-gray-200 dark:bg-gray-800 
                  text-gray-800 dark:text-gray-200 
                  transition-transform hover:scale-110 active:scale-95 shadow-lg

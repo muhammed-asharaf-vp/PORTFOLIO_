@@ -7,7 +7,7 @@ export default function AsharafPage() {
   return (
     <main className="min-h-screen flex items-center justify-center px-6">
       <div className="max-w-2xl text-center space-y-4">
-        <h1 className="text-5xl font-bold">Hi, I’m Asharaf 👋</h1>
+        <h1 className="text-5xl font-bold">Hi, I’m Asharaf </h1>
 
         <p className="text-lg text-gray-500">
           Frontend Developer • React • Next.js • Three.js

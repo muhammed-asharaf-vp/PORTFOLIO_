@@ -6,10 +6,14 @@ import Projects from "@/components/Projects";
 import Footer from "@/components/Footer";
 import About from "@/components/About";
 import ReflexGame from "@/components/Game";
+import Preloader from "@/components/PreLoader";
+import CustomCursor from "@/components/CustomCursor";
 
 export default function Home() {
   return (
     <main className="bg-[var(--background)] selection:bg-[var(--accent)] selection:text-black">
+      <Preloader />
+      <CustomCursor />
       <Navbar />
       <Hero />
       <Marquee />
