@@ -24,7 +24,7 @@ export default function Experience() {
             end: "bottom 80%",
             scrub: 1,
           },
-        },
+        }
       );
 
       // Text Reveal
@@ -44,11 +44,11 @@ export default function Experience() {
               start: "top 85%",
               toggleActions: "play none none reverse",
             },
-          },
+          }
         );
       });
     },
-    { scope: container },
+    { scope: container }
   );
 
   // 3D Tilt Effect (only desktop)
@@ -107,28 +107,12 @@ export default function Experience() {
       {/* ---------------- RESPONSIVE TIMELINE GRID ---------------- */}
       <div className="relative grid grid-cols-12 gap-8 md:gap-12">
         {/* TIMELINE LINE (Desktop center | Mobile left) */}
-        <div
-          className="
-            absolute
-            top-0 bottom-0
-            w-[2px]
-            bg-[var(--border-color)]/30
-            left-4
-            md:left-[28%]
-          "
-        >
+        <div className="absolute top-0 bottom-0 w-[2px] bg-[var(--border-color)]/30 left-4 md:left-[28%]">
           {/* Animated Fill */}
           <div className="timeline-neon absolute top-0 left-0 w-full bg-[var(--accent)] shadow-[0_0_20px_var(--accent)]" />
 
           {/* Radar Dot */}
-          <div
-            className="
-              sticky
-              top-1/2
-              -translate-y-1/2
-              -left-[5px]
-            "
-          >
+          <div className="sticky top-1/2 -translate-y-1/2 -left-[5px]">
             <span className="absolute w-4 h-4 rounded-full bg-[var(--accent)] animate-ping opacity-75"></span>
             <span className="relative block w-4 h-4 rounded-full bg-[var(--accent)] shadow-[0_0_15px_var(--accent)] border-2 border-black"></span>
           </div>
