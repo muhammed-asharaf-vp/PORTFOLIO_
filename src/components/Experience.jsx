@@ -89,8 +89,9 @@ export default function Experience() {
 
   return (
     <section
+      id="experience"
       ref={container}
-      className="relative py-20 md:py-32 px-5 sm:px-8 md:px-12 max-w-[1800px] mx-auto border-b border-[var(--border-color)] overflow-hidden"
+      className="relative py-20 md:py-32 px-5 sm:px-8 md:px-12 max-w-[1800px] mx-auto border-b border-[var(--border-color)] overflow-hidden scroll-mt-[120px]"
     >
       {/* ---------------- HEADER ---------------- */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-14 md:mb-20">
