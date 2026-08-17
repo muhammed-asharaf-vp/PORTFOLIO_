@@ -88,18 +88,26 @@ export default function About() {
     },
     {
       label: "State & Data",
-      value: "Redux, Context API, React Hooks, REST APIs",
+      value: "Redux, Context API, React Hooks",
+    },
+     {
+      label: "API & Integration",
+      value: "REST ApIs, Axios, JWT Authentication",
     },
     {
       label: "Tooling & Workflow",
-      value: "Git, GitHub, Vite, npm, CI/CD",
+      value: "Git, GitHub, Vite, npm, CI/CD , Vercel, Netlify, VS Code",
+    },
+     {
+      label: "Performance",
+      value: "Code Splitting, Lazy Loading, Image Optimization, Perf Tuning",
     },
   ];
 
   return (
     <section
       ref={container}
-      className="py-24 md:py-32 px-5 sm:px-8 md:px-12 max-w-[1800px] mx-auto overflow-hidden"
+    className="pt-24 md:pt-32 pb-8 md:pb-10 px-5 sm:px-8 md:px-12 max-w-[1800px] mx-auto overflow-hidden"
       id="about"
     >
       {/* ---------------- DESKTOP UI ---------------- */}

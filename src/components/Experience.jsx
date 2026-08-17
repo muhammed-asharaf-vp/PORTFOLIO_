@@ -6,6 +6,34 @@ import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const PROJECTS = [
+  {
+    title: "Eram Education",
+    desc: "Engineered a responsive education platform for institutions using Next.js, TypeScript, and Tailwind CSS, with reusable UI components for admissions, academics, gallery, and resources. Integrated backend APIs to power admissions, contacts, and downloadable resources, while GSAP-driven page transitions and animations delivered a polished user experience. Refined responsive layouts and performance across desktop, tablet, and mobile devices.",
+    tags: ["Next.js", "TypeScript", "Tailwind", "Node.js", "MongoDB"],
+  },
+  {
+    title: "Best Mountain",
+    desc: "Built a modern B2B website using Next.js, TypeScript, React.js, and Tailwind CSS, featuring responsive product and content sections for sustainable raw materials and industrial applications. Integrated dynamic content and downloadable resources to enhance product discovery, along with interactive UI elements and smooth animations for an engaging user experience. Optimized image loading and frontend performance for seamless cross-device compatibility in production.",
+    tags: ["React", "GSAP", "Tailwind css", "Node.js", "mongodb"],
+  },
+  {
+    title: "Pulse Pariraksha",
+    desc: "Developed a preventive healthcare booking platform featuring 30+ health check-up packages with slot reservation, WhatsApp confirmation, and dynamic package filtering. Built responsive sections for testimonials, FAQs, and the booking journey to improve user engagement. Integrated form-based lead capture and optimized performance across devices for a smooth user experience.",
+    tags: ["React", "GSAP", "Tailwind css", "Node.js", "PostgreSQL"],
+  },
+  {
+    title: "Veloce Watch Store",
+    desc: "Designed and engineered an interactive premium watch showcase website with a fully responsive layout. Built modular UI components and added smooth UI interactions for a premium user experience.",
+    tags: ["React", "GSAP"],
+  },
+  {
+    title: "Chatloop Social",
+    desc: "Developed secure social networking features with auth and profile workflows.",
+    tags: ["Flutter", "Python"],
+  },
+];
+
 export default function Experience() {
   const container = useRef(null);
 
@@ -24,7 +52,7 @@ export default function Experience() {
             end: "bottom 80%",
             scrub: 1,
           },
-        }
+        },
       );
 
       // Text Reveal
@@ -44,14 +72,13 @@ export default function Experience() {
               start: "top 85%",
               toggleActions: "play none none reverse",
             },
-          }
+          },
         );
       });
     },
-    { scope: container }
+    { scope: container },
   );
 
-  // 3D Tilt Effect (only desktop)
   const handleMouseMove = (e) => {
     if (window.innerWidth < 1024) return;
 
@@ -93,7 +120,6 @@ export default function Experience() {
       ref={container}
       className="relative py-20 md:py-32 px-5 sm:px-8 md:px-12 max-w-[1800px] mx-auto border-b border-[var(--border-color)] overflow-hidden scroll-mt-[120px]"
     >
-      {/* ---------------- HEADER ---------------- */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-14 md:mb-20">
         <div className="reveal-box">
           <h2 className="text-sm font-mono text-[var(--accent)] uppercase tracking-[0.3em] mb-2">
@@ -105,39 +131,25 @@ export default function Experience() {
         </div>
       </div>
 
-      {/* ---------------- RESPONSIVE TIMELINE GRID ---------------- */}
       <div className="relative grid grid-cols-12 gap-8 md:gap-12">
-        {/* TIMELINE LINE (Desktop center | Mobile left) */}
+        {/* TIMELINE LINE only — dots removed */}
         <div className="absolute top-0 bottom-0 w-[2px] bg-[var(--border-color)]/30 left-4 md:left-[28%]">
-          {/* Animated Fill */}
           <div className="timeline-neon absolute top-0 left-0 w-full bg-[var(--accent)] shadow-[0_0_20px_var(--accent)]" />
-
-          {/* Radar Dot */}
-          <div className="sticky top-1/2 -translate-y-1/2 -left-[5px]">
-            <span className="absolute w-4 h-4 rounded-full bg-[var(--accent)] animate-ping opacity-75"></span>
-            <span className="relative block w-4 h-4 rounded-full bg-[var(--accent)] shadow-[0_0_15px_var(--accent)] border-2 border-black"></span>
-          </div>
         </div>
 
-        {/* LEFT SIDE YEAR (Desktop) + Mobile top mini */}
         <div className="col-span-12 md:col-span-4 md:text-right md:pr-16 pl-10 md:pl-0">
           <div className="reveal-box md:sticky md:top-32">
-            {/* Desktop big year */}
             <h3 className="hidden md:block text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-[var(--foreground)] to-transparent opacity-80">
-              2025
+              2026
             </h3>
-
-            {/* Mobile year badge */}
             <div className="md:hidden flex items-center gap-3">
               <h3 className="text-3xl font-black text-[var(--foreground)]">
-                2025
+                2026
               </h3>
               <span className="font-mono text-[10px] px-3 py-1 rounded-full border border-[var(--border-color)] text-[var(--accent)] uppercase tracking-widest">
                 Present
               </span>
             </div>
-
-            {/* Desktop present label */}
             <div className="hidden md:flex mt-2 justify-end gap-3 items-center">
               <span className="w-8 h-[1px] bg-[var(--accent)]"></span>
               <span className="font-mono text-sm text-[var(--accent)] uppercase tracking-widest">
@@ -147,20 +159,15 @@ export default function Experience() {
           </div>
         </div>
 
-        {/* RIGHT CONTENT */}
         <div className="col-span-12 md:col-span-8 md:pl-8 pl-10">
-          {/* ROLE HEADER */}
           <div className="reveal-box mb-10 md:mb-16 relative">
             <div className="absolute -left-6 md:-left-12 top-2 w-3 h-3 md:w-4 md:h-4 bg-[var(--accent)] rounded-full" />
-
             <h3 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase text-[var(--foreground)] leading-tight">
-              Bridgeon
+              Toruss — Creative Agency
             </h3>
-
             <h4 className="text-lg sm:text-xl md:text-2xl font-light text-[var(--foreground)] opacity-70 mt-2">
-              Front End Developer Intern
+              Front End Developer
             </h4>
-
             <p className="text-sm sm:text-base md:text-lg opacity-60 mt-5 md:mt-6 leading-relaxed max-w-2xl">
               Engineering the future of web interfaces. Transforming raw designs
               into pixel-perfect, interactive, and scalable React applications
@@ -168,91 +175,50 @@ export default function Experience() {
             </p>
           </div>
 
-          {/* 3D TILT CARDS */}
           <div className="space-y-6 md:space-y-8">
             <h5 className="reveal-box font-mono text-xs uppercase tracking-widest opacity-40 mb-6 md:mb-8">
               // Deployed Modules
             </h5>
 
-            {/* Card 01 */}
-            <div
-              className="reveal-box group relative p-1 bg-[var(--border-color)]/20 rounded-3xl"
-              onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}
-            >
-              <div className="relative bg-[var(--card-bg)] p-6 sm:p-7 md:p-8 rounded-[22px] overflow-hidden border border-[var(--border-color)] group-hover:border-[var(--accent)] transition-colors duration-500">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--accent)] opacity-5 blur-[80px] rounded-full pointer-events-none transition-opacity group-hover:opacity-20" />
+            {PROJECTS.map((project, i) => (
+              <div
+                key={project.title}
+                className="reveal-box group relative p-1 bg-[var(--border-color)]/20 rounded-3xl"
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
+              >
+                <div className="relative bg-[var(--card-bg)] p-6 sm:p-7 md:p-8 rounded-[22px] overflow-hidden border border-[var(--border-color)] group-hover:border-[var(--accent)] transition-colors duration-500">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--accent)] opacity-5 blur-[80px] rounded-full pointer-events-none transition-opacity group-hover:opacity-20" />
 
-                <div className="flex items-start gap-4 sm:gap-6 relative z-10">
-                  <span className="font-mono text-xs p-2 border border-[var(--accent)] text-[var(--accent)] rounded-lg">
-                    01
-                  </span>
+                  <div className="flex items-start gap-4 sm:gap-6 relative z-10">
+                    <div className="flex flex-col items-center gap-2">
+                      <span className="font-mono text-xs p-2 border border-[var(--accent)] text-[var(--accent)] rounded-lg">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                    </div>
 
-                  <div>
-                    <h6 className="text-xl sm:text-2xl font-bold uppercase mb-2 group-hover:text-[var(--accent)] transition-colors">
-                      Veloce Watch Store
-                    </h6>
-
-                    <p className="text-sm sm:text-base opacity-60 mb-4 leading-relaxed">
-                      Designed and engineered an interactive premium watch
-                      showcase website with a fully responsive layout. Built
-                      modular UI components and added smooth UI interactions for
-                      a premium user experience.
-                    </p>
-
-                    <div className="flex flex-wrap gap-2">
-                      {["React", "GSAP"].map((t) => (
-                        <span
-                          key={t}
-                          className="text-[10px] font-mono opacity-50 uppercase bg-black/10 px-2 py-1 rounded"
-                        >
-                          {t}
-                        </span>
-                      ))}
+                    <div>
+                      <h6 className="text-xl sm:text-2xl font-bold uppercase mb-2 group-hover:text-[var(--accent)] transition-colors">
+                        {project.title}
+                      </h6>
+                      <p className="text-sm sm:text-base opacity-60 mb-4 leading-relaxed">
+                        {project.desc}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {project.tags.map((t) => (
+                          <span
+                            key={t}
+                            className="text-[10px] font-mono opacity-50 uppercase bg-black/10 px-2 py-1 rounded"
+                          >
+                            {t}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-
-            {/* Card 02 */}
-            <div
-              className="reveal-box group relative p-1 bg-[var(--border-color)]/20 rounded-3xl"
-              onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}
-            >
-              <div className="relative bg-[var(--card-bg)] p-6 sm:p-7 md:p-8 rounded-[22px] overflow-hidden border border-[var(--border-color)] group-hover:border-[var(--accent)] transition-colors duration-500">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--accent)] opacity-5 blur-[80px] rounded-full pointer-events-none transition-opacity group-hover:opacity-20" />
-
-                <div className="flex items-start gap-4 sm:gap-6 relative z-10">
-                  <span className="font-mono text-xs p-2 border border-[var(--accent)] text-[var(--accent)] rounded-lg">
-                    02
-                  </span>
-
-                  <div>
-                    <h6 className="text-xl sm:text-2xl font-bold uppercase mb-2 group-hover:text-[var(--accent)] transition-colors">
-                      Chatloop Social
-                    </h6>
-
-                    <p className="text-sm sm:text-base opacity-60 mb-4 leading-relaxed">
-                      Developed secure social networking features with auth and
-                      profile workflows.
-                    </p>
-
-                    <div className="flex flex-wrap gap-2">
-                      {["Flutter", "Python"].map((t) => (
-                        <span
-                          key={t}
-                          className="text-[10px] font-mono opacity-50 uppercase bg-black/10 px-2 py-1 rounded"
-                        >
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>

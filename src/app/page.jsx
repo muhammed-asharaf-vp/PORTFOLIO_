@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Marquee from "@/components/Marquee";
@@ -10,12 +14,19 @@ import Preloader from "@/components/PreLoader";
 import CustomCursor from "@/components/CustomCursor";
 
 export default function Home() {
+  const [heroReady, setHeroReady] = useState(false);
+
   return (
     <main className="bg-[var(--background)] selection:bg-[var(--accent)] selection:text-black">
-      <Preloader />
+      {/* PRELOADER */}
+      <Preloader onFinish={() => setHeroReady(true)} />
+
       <CustomCursor />
       <Navbar />
-      <Hero />
+
+      {/* HERO (waits for preloader) */}
+      <Hero ready={heroReady} />
+
       <Marquee />
       <About />
       <Experience />

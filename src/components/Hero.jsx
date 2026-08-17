@@ -4,7 +4,7 @@ import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 
-export default function Hero() {
+export default function Hero({ready}) {
   const container = useRef(null);
 
   useGSAP(
@@ -63,7 +63,7 @@ export default function Hero() {
             Front End Developer
           </p>
 
-          <div className="overflow-hidden">
+          <div>
             <h1 className="text-[12vw] leading-[0.82] font-black uppercase tracking-tighter text-[var(--foreground)]">
               {Array.from("MOHAMED").map((char, i) => (
                 <span key={i} className="hero-char inline-block">
@@ -73,14 +73,14 @@ export default function Hero() {
             </h1>
           </div>
 
-          <div className="overflow-hidden">
+          <div>
             <h1 className="text-[12vw] leading-[0.82] font-black uppercase tracking-tighter text-[var(--foreground)] ml-[5vw]">
               {Array.from("ASHARAF").map((char, i) => (
-                <span key={i} className="hero-char inline-block">
+                <span key={i} className="hero-char">
                   {char}
                 </span>
               ))}
-              <span className="hero-char inline-block text-[var(--accent)]">
+              <span className="hero-char text-[var(--accent)]">
                 .
               </span>
             </h1>
@@ -117,11 +117,11 @@ export default function Hero() {
           <div className="overflow-hidden">
             <h1 className="text-[15vw] leading-[0.95] font-black uppercase tracking-tight text-[var(--foreground)]">
               {Array.from("ASHARAF").map((char, i) => (
-                <span key={i} className="hero-char inline-block">
+                <span key={i} className="hero-char">
                   {char}
                 </span>
               ))}
-              <span className="hero-char inline-block text-[var(--accent)]">
+              <span className="hero-char text-[var(--accent)]">
                 .
               </span>
             </h1>

@@ -15,29 +15,57 @@ export default function Projects() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  const projects = [
+ const projects = [
     {
-      id: "01",
-      title: "Veloce",
-      category: "Premium Watch Showcase Website",
-      pitch:
-        "Interactive premium watch showcase website with a fully responsive layout, modular UI components, and smooth modern UI interactions.",
-      stack: ["React", "JavaScript", "Tailwind CSS", "HTML", "CSS"],
-      theme: "light",
-      link: "https://vel0ce.vercel.app",
-    },
+    id: "01",
+    title: "Eram Education",
+    category: "Multi-Institution Education Management Platform",
+    pitch: "Unified CMS and portal for a multi-school group, streamlining events, gallery, downloads, and student-parent communication across institutions with a scalable architecture.",
+    stack: ["Next.js", "TypeScript", "Tailwind CSS", "Node.js", "MongoDb"],
+    theme: "dark",
+    link: "https://eram.edu.in/",
+  },
+   {
+    id: "02",
+    title: "Best Mountain",
+    category: "Building Materials Business & Catalog Platform",
+    pitch:"Business website for a building materials supplier, showcasing products and services with inquiry-driven lead generation and a scalable, self-hosted architecture.", 
+    stack: ["React", "Tailwind CSS", "Node.js", "MongoDb"],
+    theme: "light",
+    link: "https://www.bm-materials.com/",
+  },
     {
-      id: "02",
-      title: "Chatloop",
-      category: "Secure Social Networking Platform",
-      pitch:
-        "Secure social networking platform supporting real-time messaging and content sharing with authentication, profile management, and safety-focused workflows.",
-      stack: ["Flutter", "Dart", "Python", "SQL", "Bootstrap"],
-      theme: "dark",
-      link: "https://example.com",
-    },
-  ];
+    id: "03",
+    title: "Pulse Pariraksha",
+    category: "Healthcare Diagnostics & Appointment Booking Platform",
+    pitch:
+      "Preventive healthcare platform for booking health check-up packages, featuring package discovery, slot reservation, and WhatsApp-integrated confirmation workflows.",
+    stack: ["React", "Tailwind CSS", "Node.js", "PostgreSQL"],
+    theme: "dark",
+    link: "https://pariraksha.pulsepkd.com/",
+  },
+  {
+    id: "04",
+    title: "Veloce",
+    category: "Premium Watch Showcase Website",
+    pitch:
+      "Interactive premium watch showcase website with a fully responsive layout, modular UI components, and smooth modern UI interactions.",
+    stack: ["React", "JavaScript", "Tailwind CSS", "HTML", "CSS"],
+    theme: "light",
+    link: "https://vel0ce.vercel.app",
+  },
+  {
+    id: "05",
+    title: "Chatloop",
+    category: "Secure Social Networking Platform",
+    pitch:
+      "Secure social networking platform supporting real-time messaging and content sharing with authentication, profile management, and safety-focused workflows.",
+    stack: ["Flutter", "Dart", "Python", "SQL", "Bootstrap"],
+    theme: "dark",
+    link: "https://example.com",
+  },
 
+];
   useGSAP(
     () => {
       //  Stop GSAP running before mount

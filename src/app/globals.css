@@ -152,3 +152,9 @@ body {
 section {
   overflow-x: hidden;
 }
+
+.hero-char,
+.hero-pill {
+  will-change: transform, opacity;
+}
+

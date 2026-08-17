@@ -21,18 +21,7 @@ export default function Footer() {
           </span>
 
           <FiArrowUpRight
-            className="
-              text-[var(--accent)]
-              text-6xl
-              transition-all
-              duration-300
-              opacity-0
-              translate-y-2
-              group-hover:opacity-100
-              group-hover:-translate-y-2
-              group-hover:translate-x-2
-            "
-          />
+            className=" text-[var(--accent)] text-6xl transition-all duration-300 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:-translate-y-2 group-hover:translate-x-2 "/>
         </a>
 
         <p className="mt-6 text-base opacity-60 max-w-xl font-light leading-relaxed">
@@ -89,18 +78,7 @@ function SocialLink({ href, label }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="
-        cursor-dot-zone
-        relative group
-        hover:text-[var(--accent)]
-        transition-colors
-        px-5 py-3
-        rounded-full
-        border border-[var(--border-color)]
-        md:border-none
-        md:px-0 md:py-0
-      "
-    >
+      className=" cursor-dot-zone relative group hover:text-[var(--accent)] transition-colors px-5 py-3 rounded-full border border-[var(--border-color)] md:border-none md:px-0 md:py-0 " >
       {label}
 
       {/* underline only for desktop */}
