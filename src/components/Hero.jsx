@@ -6,13 +6,14 @@ import { useGSAP } from "@gsap/react";
 
 const SKILLS = [
   "React.js",
+  "Next.js",
+  "Node.js",
   "Redux",
+  "MongoDB",
   "GSAP",
   "Three.js",
   "Tailwind CSS",
-  "Bootstrap",
   "TypeScript",
-  "Next.js",
 ];
 
 const splitChars = (word) =>

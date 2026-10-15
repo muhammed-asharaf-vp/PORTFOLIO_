@@ -281,7 +281,7 @@ export default function Preloader({ onFinish }) {
       </div>
 
       <p className="text-[#D9F216] font-mono tracking-[0.3em] md:tracking-[0.5em] mt-2 md:mt-4 uppercase text-[10px] md:text-xs text-center opacity-90">
-        Front End Developer
+        Full Stack Developer
       </p>
 
       <div className="absolute bottom-0 left-0 w-full h-1 md:h-1.5 bg-zinc-900">
