@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -7,34 +7,28 @@ import { FiArrowUpRight } from "react-icons/fi";
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function Projects() {
-  const container = useRef(null);
-  const scrollContainer = useRef(null);
-
-  //  hydration fix (run gsap only after mount)
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-
- const projects = [
-    {
+const PROJECTS = [
+  {
     id: "01",
     title: "Eram Education",
     category: "Multi-Institution Education Management Platform",
-    pitch: "Unified CMS and portal for a multi-school group, streamlining events, gallery, downloads, and student-parent communication across institutions with a scalable architecture.",
-    stack: ["Next.js", "TypeScript", "Tailwind CSS", "Node.js", "MongoDb"],
+    pitch:
+      "Unified CMS and portal for a multi-school group, streamlining events, gallery, downloads, and student-parent communication across institutions with a scalable architecture.",
+    stack: ["Next.js", "TypeScript", "Tailwind CSS", "Node.js", "MongoDB"],
     theme: "dark",
     link: "https://eram.edu.in/",
   },
-   {
+  {
     id: "02",
     title: "Best Mountain",
     category: "Building Materials Business & Catalog Platform",
-    pitch:"Business website for a building materials supplier, showcasing products and services with inquiry-driven lead generation and a scalable, self-hosted architecture.", 
-    stack: ["React", "Tailwind CSS", "Node.js", "MongoDb"],
+    pitch:
+      "Business website for a building materials supplier, showcasing products and services with inquiry-driven lead generation and a scalable, self-hosted architecture.",
+    stack: ["React", "Tailwind CSS", "Node.js", "MongoDB"],
     theme: "light",
     link: "https://www.bm-materials.com/",
   },
-    {
+  {
     id: "03",
     title: "Pulse Pariraksha",
     category: "Healthcare Diagnostics & Appointment Booking Platform",
@@ -62,58 +56,43 @@ export default function Projects() {
       "Secure social networking platform supporting real-time messaging and content sharing with authentication, profile management, and safety-focused workflows.",
     stack: ["Flutter", "Dart", "Python", "SQL", "Bootstrap"],
     theme: "dark",
-    link: "https://example.com",
   },
-
 ];
+
+export default function Projects() {
+  const container = useRef(null);
+  const scrollContainer = useRef(null);
+
   useGSAP(
     () => {
-      //  Stop GSAP running before mount
-      if (!mounted) return;
-
       const mm = gsap.matchMedia();
 
       mm.add("(min-width: 1024px)", () => {
         const el = scrollContainer.current;
         const wrap = container.current;
-
         if (!el || !wrap) return;
 
-        //  refresh before measure (safe)
-        ScrollTrigger.refresh();
+        //  only needed scroll distance — re-measured on every refresh/resize
+        const getDistance = () =>
+          Math.max(0, el.scrollWidth - window.innerWidth);
 
-        const scrollWidth = el.scrollWidth;
-        const windowWidth = window.innerWidth;
-
-        //  only needed scroll distance
-        const distance = Math.max(0, scrollWidth - windowWidth);
-
-        const tween = gsap.to(el, {
-          x: () => -distance,
+        gsap.to(el, {
+          x: () => -getDistance(),
           ease: "none",
           force3D: true,
           scrollTrigger: {
             trigger: wrap,
             start: "top top",
-            end: () => `+=${distance}`, //  FIXED (no extra space)
+            end: () => `+=${getDistance()}`,
             scrub: 1,
             pin: true,
             invalidateOnRefresh: true,
             anticipatePin: 1,
           },
         });
-
-        //  cleanup for this media query
-        return () => {
-          tween?.scrollTrigger?.kill();
-          tween?.kill();
-        };
       });
-
-      //  cleanup all matchMedia handlers
-      return () => mm.revert();
     },
-    { scope: container, dependencies: [mounted] },
+    { scope: container },
   );
 
   return (
@@ -142,17 +121,17 @@ export default function Projects() {
           <div className="w-[35vw] shrink-0 flex flex-col justify-center z-10">
             <div className="mb-6 flex items-center gap-4">
               <span className="w-12 h-[2px] bg-[var(--accent)]"></span>
-              <h1 className="font-mono text-5xl uppercase tracking-widest text-[var(--accent)]">
+              <h2 className="font-mono text-5xl uppercase tracking-widest text-[var(--accent)]">
                 Projects
-              </h1>
+              </h2>
             </div>
 
-            <h2 className="text-9xl font-black text-[var(--foreground)] leading-[0.8] tracking-tighter uppercase">
+            <p className="text-9xl font-black text-[var(--foreground)] leading-[0.8] tracking-tighter uppercase">
               <br />
               <span className="text-transparent text-stroke-foreground">
                 Work
               </span>
-            </h2>
+            </p>
 
             <p className="mt-8 text-xl opacity-60 max-w-md font-light leading-relaxed">
               Building responsive, high-performance frontends with React,
@@ -161,7 +140,7 @@ export default function Projects() {
           </div>
 
           {/* Projects */}
-          {projects.map((project) => (
+          {PROJECTS.map((project) => (
             <div
               key={project.id}
               className="w-[55vw] h-[70vh] relative group shrink-0"
@@ -206,7 +185,7 @@ export default function Projects() {
 
         {/* Mobile Cards */}
         <div className="flex flex-col gap-8">
-          {projects.map((project) => (
+          {PROJECTS.map((project) => (
             <div key={project.id} className="w-full">
               <ProjectCard project={project} isMobile />
             </div>
@@ -277,23 +256,26 @@ function ProjectCard({ project, isMobile = false }) {
           </h3>
         </div>
 
-        {/* Link */}
-        <a
-          href={project.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`
-            cursor-dot-zone inline-flex items-center justify-center
-            p-4 rounded-full border transition-all shrink-0
-            ${
-              project.theme === "dark"
-                ? "border-[var(--background)] hover:bg-[var(--accent)] hover:border-[var(--accent)] hover:text-black"
-                : "border-[var(--foreground)] hover:bg-[var(--accent)] hover:border-[var(--accent)] hover:text-black"
-            }
-          `}
-        >
-          <FiArrowUpRight className="text-2xl" />
-        </a>
+        {/* Link (only for projects that are live) */}
+        {project.link && (
+          <a
+            href={project.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Visit ${project.title}`}
+            className={`
+              cursor-dot-zone inline-flex items-center justify-center
+              p-4 rounded-full border transition-all shrink-0
+              ${
+                project.theme === "dark"
+                  ? "border-[var(--background)] hover:bg-[var(--accent)] hover:border-[var(--accent)] hover:text-black"
+                  : "border-[var(--foreground)] hover:bg-[var(--accent)] hover:border-[var(--accent)] hover:text-black"
+              }
+            `}
+          >
+            <FiArrowUpRight aria-hidden="true" className="text-2xl" />
+          </a>
+        )}
       </div>
 
       {/* Details */}

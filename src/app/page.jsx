@@ -1,31 +1,24 @@
-"use client";
+import dynamic from "next/dynamic";
 
-import { useState } from "react";
-
-import Navbar from "@/components/Navbar";
-import Hero from "@/components/Hero";
+import HomeIntro from "@/components/HomeIntro";
 import Marquee from "@/components/Marquee";
 import Experience from "@/components/Experience";
 import Projects from "@/components/Projects";
 import Footer from "@/components/Footer";
 import About from "@/components/About";
-import ReflexGame from "@/components/Game";
-import Preloader from "@/components/PreLoader";
 import CustomCursor from "@/components/CustomCursor";
 
-export default function Home() {
-  const [heroReady, setHeroReady] = useState(false);
+// Below the fold: split the game into its own chunk
+const ReflexGame = dynamic(() => import("@/components/Game"));
 
+// Server component: only the interactive sections ship client JS
+export default function Home() {
   return (
     <main className="bg-[var(--background)] selection:bg-[var(--accent)] selection:text-black">
-      {/* PRELOADER */}
-      <Preloader onFinish={() => setHeroReady(true)} />
-
       <CustomCursor />
-      <Navbar />
 
-      {/* HERO (waits for preloader) */}
-      <Hero ready={heroReady} />
+      {/* Preloader + Navbar + Hero (Hero waits for the preloader) */}
+      <HomeIntro />
 
       <Marquee />
       <About />

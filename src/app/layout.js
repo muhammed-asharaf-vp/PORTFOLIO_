@@ -1,16 +1,16 @@
-import Preloader from "@/components/PreLoader";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 // ✅ SEO + Favicon Config
 export const metadata = {
-  metadataBase: new URL("https://asharaf.vercel.app"),
+  metadataBase: new URL(SITE_URL),
 
   title: {
     default:
       "Mohamed Asharaf VP | Front-End Developer | Next.js | React | GSAP | Three.js | TypeScript",
-    template: "%s | Mohamed Asharaf VP",
+    template: `%s | ${SITE_NAME}`,
   },
 
   description:
@@ -29,34 +29,30 @@ export const metadata = {
     "Portfolio Website",
   ],
 
-  authors: [{ name: "Mohamed Asharaf VP" }],
-  creator: "Mohamed Asharaf VP",
+  authors: [{ name: SITE_NAME }],
+  creator: SITE_NAME,
+
+  alternates: { canonical: "/" },
 
   //  Favicon + Icons
   icons: {
     icon: [
-      { url: "/favicon.ico" }, // best for browsers
-      { url: "/favicon.png", type: "image/png" }, // your MA logo png
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-96x96.png", type: "image/png", sizes: "96x96" },
     ],
     apple: [{ url: "/apple-touch-icon.png", type: "image/png" }],
   },
+  manifest: "/site.webmanifest",
 
+  // og:image comes from app/opengraph-image.jsx
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://asharaf.vercel.app",
+    url: SITE_URL,
     title: "Mohamed Asharaf VP - Front-End Developer",
     description:
       "Building scalable and modern web apps with React, Next.js, GSAP, and Three.js. View my projects and experience.",
-    siteName: "Mohamed Asharaf VP Portfolio",
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Mohamed Asharaf VP Portfolio",
-      },
-    ],
+    siteName: `${SITE_NAME} Portfolio`,
   },
 
   robots: {
@@ -72,11 +68,14 @@ export const metadata = {
   },
 };
 
-//  Recommended for mobile + theme
+// Pinch-zoom stays enabled (blocking it fails accessibility audits)
 export const viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#050505" },
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+  ],
 };
 
 export default function RootLayout({ children }) {
@@ -84,7 +83,6 @@ export default function RootLayout({ children }) {
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          <Preloader />
           <SmoothScroll>{children}</SmoothScroll>
         </ThemeProvider>
       </body>

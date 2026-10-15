@@ -6,112 +6,115 @@ import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const SPECS = [
+  {
+    label: "Core Framework",
+    value: "JavaScript (ES6+), TypeScript, React.js, Next.js",
+  },
+  {
+    label: "UI & Styling",
+    value: "Tailwind CSS, Responsive Design, CSS Animations, Figma",
+  },
+  {
+    label: "Animation & 3D",
+    value: "GSAP, Three.js, Scroll-based Animations",
+  },
+  {
+    label: "State & Data",
+    value: "Redux, Context API, React Hooks",
+  },
+  {
+    label: "API & Integration",
+    value: "REST APIs, Axios, JWT Authentication",
+  },
+  {
+    label: "Tooling & Workflow",
+    value: "Git, GitHub, Vite, npm, CI/CD, Vercel, Netlify, VS Code",
+  },
+  {
+    label: "Performance",
+    value: "Code Splitting, Lazy Loading, Image Optimization, Perf Tuning",
+  },
+];
+
 export default function About() {
   const container = useRef(null);
 
   useGSAP(
     () => {
-      if (!container.current) return;
+      const mm = gsap.matchMedia();
 
-      const ctx = gsap.context(() => {
-        // BIO animation
-        gsap.from(".about-bio", {
-          scrollTrigger: {
-            trigger: container.current,
-            start: "top 75%",
-            toggleActions: "play none none reverse",
-          },
-          y: 40,
-          opacity: 0,
-          duration: 0.9,
-          stagger: 0.08,
-          ease: "power3.out",
-        });
+      // Desktop and mobile layouts both exist in the DOM; only animate the
+      // visible one so hidden copies don't create dead ScrollTriggers.
+      mm.add(
+        {
+          desktop:
+            "(min-width: 768px) and (prefers-reduced-motion: no-preference)",
+          mobile:
+            "(max-width: 767px) and (prefers-reduced-motion: no-preference)",
+        },
+        (ctx) => {
+          const scope = ctx.conditions.desktop
+            ? ".about-desktop"
+            : ".about-mobile";
 
-        // Specs animation
-        const rows = gsap.utils.toArray(".spec-row");
-
-        rows.forEach((row, i) => {
-          gsap.from(row, {
+          // BIO animation
+          gsap.from(`${scope} .about-bio`, {
             scrollTrigger: {
-              trigger: row,
-              start: "top 88%",
+              trigger: container.current,
+              start: "top 75%",
               toggleActions: "play none none reverse",
             },
-            y: 25,
+            y: 40,
             opacity: 0,
-            duration: 0.7,
-            delay: i * 0.08,
+            duration: 0.9,
+            stagger: 0.08,
             ease: "power3.out",
           });
 
-          const line = row.querySelector(".divider-line");
-          if (line) {
-            gsap.from(line, {
+          // Specs animation
+          gsap.utils.toArray(`${scope} .spec-row`).forEach((row, i) => {
+            gsap.from(row, {
               scrollTrigger: {
                 trigger: row,
                 start: "top 88%",
+                toggleActions: "play none none reverse",
               },
-              scaleX: 0,
-              transformOrigin: "left",
-              duration: 1,
-              ease: "expo.out",
+              y: 25,
+              opacity: 0,
+              duration: 0.7,
+              delay: i * 0.08,
+              ease: "power3.out",
             });
-          }
-        });
-      }, container);
 
-      // ✅ HARD REFRESH AFTER FULL LOAD (real fix)
-      requestAnimationFrame(() => ScrollTrigger.refresh());
-      window.addEventListener("load", ScrollTrigger.refresh);
-
-      return () => {
-        window.removeEventListener("load", ScrollTrigger.refresh);
-        ctx.revert();
-      };
+            const line = row.querySelector(".divider-line");
+            if (line) {
+              gsap.from(line, {
+                scrollTrigger: {
+                  trigger: row,
+                  start: "top 88%",
+                },
+                scaleX: 0,
+                transformOrigin: "left",
+                duration: 1,
+                ease: "expo.out",
+              });
+            }
+          });
+        },
+      );
     },
     { scope: container },
   );
 
-  const specs = [
-    {
-      label: "Core Framework",
-      value: "JavaScript (ES6+), TypeScript, React.js, Next.js",
-    },
-    {
-      label: "UI & Styling",
-      value: "Tailwind CSS, Responsive Design, CSS Animations, Figma",
-    },
-    {
-      label: "Animation & 3D",
-      value: "GSAP, Three.js, Scroll-based Animations",
-    },
-    {
-      label: "State & Data",
-      value: "Redux, Context API, React Hooks",
-    },
-     {
-      label: "API & Integration",
-      value: "REST ApIs, Axios, JWT Authentication",
-    },
-    {
-      label: "Tooling & Workflow",
-      value: "Git, GitHub, Vite, npm, CI/CD , Vercel, Netlify, VS Code",
-    },
-     {
-      label: "Performance",
-      value: "Code Splitting, Lazy Loading, Image Optimization, Perf Tuning",
-    },
-  ];
-
   return (
     <section
       ref={container}
-    className="pt-24 md:pt-32 pb-8 md:pb-10 px-5 sm:px-8 md:px-12 max-w-[1800px] mx-auto overflow-hidden"
+      className="pt-24 md:pt-32 pb-8 md:pb-10 px-5 sm:px-8 md:px-12 max-w-[1800px] mx-auto overflow-clip"
       id="about"
     >
       {/* ---------------- DESKTOP UI ---------------- */}
-      <div className="hidden md:grid grid-cols-12 gap-x-12 gap-y-16">
+      <div className="about-desktop hidden md:grid grid-cols-12 gap-x-12 gap-y-16">
         {/* Sticky Profile */}
         <div className="md:col-span-3">
           <h2 className="about-bio text-xs font-mono text-[var(--accent)] uppercase tracking-[0.2em] sticky top-32 flex items-center gap-3">
@@ -167,11 +170,11 @@ export default function About() {
           {/* SPECS */}
           <div className="w-full">
             <h4 className="about-bio font-mono text-xs uppercase tracking-widest opacity-40 mb-8">
-              // Technical Specifications
+              {"// Technical Specifications"}
             </h4>
 
             <div className="flex flex-col">
-              {specs.map((spec, i) => (
+              {SPECS.map((spec, i) => (
                 <div
                   key={i}
                   className="spec-row group relative overflow-hidden"
@@ -196,7 +199,7 @@ export default function About() {
       </div>
 
       {/* ---------------- MOBILE UI ---------------- */}
-      <div className="block md:hidden">
+      <div className="about-mobile block md:hidden">
         {/* Mobile Header */}
         <div className="about-bio flex items-center justify-between mb-8">
           <h2 className="text-xs font-mono text-[var(--accent)] uppercase tracking-[0.2em] flex items-center gap-3">
@@ -252,11 +255,11 @@ export default function About() {
         {/* Mobile Specs */}
         <div className="mt-12">
           <h4 className="about-bio font-mono text-xs uppercase tracking-widest opacity-40 mb-6">
-            // Technical Specs
+            {"// Technical Specs"}
           </h4>
 
           <div className="flex flex-col gap-4">
-            {specs.map((spec, i) => (
+            {SPECS.map((spec, i) => (
               <div
                 key={i}
                 className="spec-row rounded-2xl border border-[var(--border-color)] p-5"

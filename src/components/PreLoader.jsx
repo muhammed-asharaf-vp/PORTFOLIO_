@@ -1,12 +1,35 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffectEvent, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
+
+const STORAGE_KEY = "preloader_done";
+
+const alreadyPlayed = () => {
+  try {
+    return sessionStorage.getItem(STORAGE_KEY) === "true";
+  } catch {
+    return false;
+  }
+};
+
+const markPlayed = () => {
+  try {
+    sessionStorage.setItem(STORAGE_KEY, "true");
+  } catch {
+    // storage blocked (private mode etc.) — just replay next time
+  }
+};
+
+// Block wheel/touch scrolling (including Lenis) while the overlay is up
+const blockScroll = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+};
 
 export default function Preloader({ onFinish }) {
   const [show, setShow] = useState(true);
-  const [skipAnim, setSkipAnim] = useState(false);
-  const initRef = useRef(false); // ✅ guards against StrictMode double-invoke
+  const finish = useEffectEvent(() => onFinish?.());
 
   const containerRef = useRef(null);
   const svgRef = useRef(null);
@@ -18,22 +41,30 @@ export default function Preloader({ onFinish }) {
   const mGlowRef = useRef(null);
   const aGlowRef = useRef(null);
 
-  useEffect(() => {
-    if (initRef.current) return; // second (StrictMode) invocation skip cheyyuka
-    initRef.current = true;
-
-    const already = sessionStorage.getItem("preloader_done");
-    if (already) {
-      setShow(false);
-      setSkipAnim(true);
-      onFinish?.();
-      return;
-    }
-    sessionStorage.setItem("preloader_done", "true");
-  }, []);
-
   useLayoutEffect(() => {
-    if (!show || skipAnim) return;
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    // Already seen this session (or reduced motion): skip before first paint
+    if (alreadyPlayed() || reducedMotion) {
+      containerRef.current.style.display = "none";
+      finish();
+      // unmount in a callback, not synchronously inside the effect
+      const id = requestAnimationFrame(() => setShow(false));
+      return () => cancelAnimationFrame(id);
+    }
+
+    const html = document.documentElement;
+    const scrollOpts = { capture: true, passive: false };
+    html.style.overflow = "hidden";
+    window.addEventListener("wheel", blockScroll, scrollOpts);
+    window.addEventListener("touchmove", blockScroll, scrollOpts);
+    const unlockScroll = () => {
+      html.style.overflow = "";
+      window.removeEventListener("wheel", blockScroll, scrollOpts);
+      window.removeEventListener("touchmove", blockScroll, scrollOpts);
+    };
 
     const isMobile = window.innerWidth < 768;
     const strokePaths = [mPathRef.current, aPathRef.current];
@@ -62,8 +93,10 @@ export default function Preloader({ onFinish }) {
     const tl = gsap.timeline({
       defaults: { ease: "power2.out" },
       onComplete: () => {
+        markPlayed(); // only after a full play, so a mid-animation reload replays it
+        unlockScroll();
         setShow(false);
-        onFinish?.(); // ✅ notify parent so Hero can reveal
+        finish(); // ✅ notify parent so Hero can reveal
       },
     });
 
@@ -85,7 +118,7 @@ export default function Preloader({ onFinish }) {
         ease: "power2.inOut",
         stagger: 0.15,
       },
-      "<0.08"
+      "<0.08",
     );
 
     // Progress bar now lives INSIDE the main timeline so it's always in sync
@@ -93,7 +126,7 @@ export default function Preloader({ onFinish }) {
     tl.to(
       progressRef.current,
       { width: "100%", duration: 1.6, ease: "power1.inOut" },
-      0
+      0,
     );
 
     if (!isMobile) {
@@ -108,7 +141,7 @@ export default function Preloader({ onFinish }) {
           yoyo: true,
           repeat: 1,
         },
-        "-=0.3"
+        "-=0.3",
       );
     }
 
@@ -134,13 +167,13 @@ export default function Preloader({ onFinish }) {
           for (let i = reveal; i < finalText.length; i++) {
             out += chars[(Math.random() * chars.length) | 0];
           }
-          if (textRef.current) textRef.current.innerText = out;
+          if (textRef.current) textRef.current.textContent = out;
         },
         onComplete: () => {
-          if (textRef.current) textRef.current.innerText = finalText;
+          if (textRef.current) textRef.current.textContent = finalText;
         },
       },
-      "-=0.55"
+      "-=0.55",
     );
 
     // Smoother, slightly longer exit with an expo ease — feels like a
@@ -152,14 +185,18 @@ export default function Preloader({ onFinish }) {
       delay: 0.2,
     });
 
-    return () => tl.kill();
-  }, [show, skipAnim]);
+    return () => {
+      tl.kill();
+      unlockScroll();
+    };
+  }, []);
 
   if (!show) return null;
 
   return (
     <div
       ref={containerRef}
+      aria-hidden="true"
       className="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center overflow-hidden p-5 select-none"
     >
       <div
@@ -236,7 +273,7 @@ export default function Preloader({ onFinish }) {
       </div>
 
       <div className="h-8 md:h-12 overflow-hidden flex items-center">
-        <h1
+        <p
           ref={textRef}
           className="font-black font-mono tracking-tighter text-white text-center uppercase whitespace-nowrap"
           style={{ fontSize: "clamp(1.1rem, 4vw, 2.3rem)" }}

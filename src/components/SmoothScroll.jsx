@@ -9,20 +9,17 @@ gsap.registerPlugin(ScrollTrigger);
 export default function SmoothScroll({ children }) {
   useEffect(() => {
     //  Lighthouse testing time il Lenis OFF
-    const isLighthouse =
-      typeof navigator !== "undefined" &&
-      navigator.userAgent.includes("Chrome-Lighthouse");
-
-    if (isLighthouse) return;
+    if (navigator.userAgent.includes("Chrome-Lighthouse")) return;
 
     //  Mobile il Lenis completely OFF (BIG performance boost)
-    const isMobile = window.innerWidth < 768;
-    if (isMobile) return;
+    if (window.innerWidth < 768) return;
+
+    //  Respect reduced-motion users: native scrolling
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const lenis = new Lenis({
       duration: 0.75,
       smoothWheel: true,
-      smoothTouch: false,
     });
 
     window.lenis = lenis;
@@ -34,15 +31,12 @@ export default function SmoothScroll({ children }) {
     gsap.ticker.add(raf);
     gsap.ticker.lagSmoothing(0);
 
-    ScrollTrigger.refresh();
-
     return () => {
       window.lenis = null;
-      lenis.off("scroll", ScrollTrigger.update);
-      lenis.destroy();
       gsap.ticker.remove(raf);
+      lenis.destroy();
     };
   }, []);
 
-  return <div className="w-full min-h-screen">{children}</div>;
+  return children;
 }

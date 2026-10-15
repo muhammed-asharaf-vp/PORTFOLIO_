@@ -1,7 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  useEffect,
+  useEffectEvent,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 import { FiRefreshCw, FiType } from "react-icons/fi";
 
 const DIFFICULTIES = {
@@ -25,25 +32,96 @@ const DIFFICULTIES = {
   },
 };
 
-export default function TypingSpeedGame() {
-  const inputRef = useRef(null);
-  const containerRef = useRef(null);
+const TEXTS = [
+  // easy (6-10 words)
+  "build clean scalable ui with reusable components",
+  "react next js tailwind gsap for modern frontends",
+  "performance accessibility and pixel perfect design",
+  "ship fast test often and keep code readable",
+  "frontend developer crafting smooth user experiences",
+  "optimize rendering and reduce unnecessary re-renders",
+  "design systems tokens spacing and consistent typography",
+  "animations should feel smooth not heavy and not distracting",
+  "focus on user experience speed clarity and accessibility",
+  "write maintainable code with clear naming and structure",
+  // medium (10-14 words)
+  "small focused components are easier to test reuse and reason about over time",
+  "lazy load heavy sections so the first paint stays fast on slow networks",
+  "a good layout adapts to every screen without hiding important content from users",
+  "measure before you optimize because the slowest part is rarely where you expect",
+  // hard (14-22 words)
+  "keep state as close as possible to where it is used and lift it up only when two components need it",
+  "smooth scroll driven animations should run on transforms and opacity so the browser can keep them on the compositor",
+  "accessible interfaces use semantic html clear focus states and enough color contrast so everyone can use the product",
+  "ship small pull requests with clear descriptions so reviewers can understand the change and merge it with confidence",
+];
 
-  const texts = useMemo(
-    () => [
-      "build clean scalable ui with reusable components",
-      "react next js tailwind gsap for modern frontends",
-      "performance accessibility and pixel perfect design",
-      "ship fast test often and keep code readable",
-      "frontend developer crafting smooth user experiences",
-      "optimize rendering and reduce unnecessary re-renders",
-      "design systems tokens spacing and consistent typography",
-      "animations should feel smooth not heavy and not distracting",
-      "focus on user experience speed clarity and accessibility",
-      "write maintainable code with clear naming and structure",
-    ],
-    [],
-  );
+const TICK_MS = 200;
+
+// ---------------- BEST SCORE STORAGE ----------------
+const BEST_EVENT = "typing-best-change";
+const bestKey = (difficulty) => `typing_best_wpm_${difficulty}`;
+
+const readBest = (difficulty) => {
+  try {
+    return Number(localStorage.getItem(bestKey(difficulty))) || 0;
+  } catch {
+    return 0;
+  }
+};
+
+const saveBest = (difficulty, wpm) => {
+  if (wpm <= readBest(difficulty)) return;
+  try {
+    localStorage.setItem(bestKey(difficulty), String(wpm));
+    window.dispatchEvent(new Event(BEST_EVENT));
+  } catch {
+    // storage unavailable — keep playing without persistence
+  }
+};
+
+const subscribeBest = (onChange) => {
+  window.addEventListener("storage", onChange);
+  window.addEventListener(BEST_EVENT, onChange);
+  return () => {
+    window.removeEventListener("storage", onChange);
+    window.removeEventListener(BEST_EVENT, onChange);
+  };
+};
+
+// ---------------- SCORING ----------------
+const calcStats = (typed, quote, elapsedSec) => {
+  let correctChars = 0;
+  for (let i = 0; i < typed.length; i++) {
+    if (typed[i] === quote[i]) correctChars++;
+  }
+
+  // floor at 1s so the first keystroke doesn't show an absurd WPM
+  const minutes = Math.max(elapsedSec, 1) / 60;
+
+  return {
+    wpm: typed.length ? Math.round(correctChars / 5 / minutes) : 0,
+    accuracy: typed.length
+      ? Math.round((correctChars / typed.length) * 100)
+      : 100,
+  };
+};
+
+const pickQuote = (difficulty) => {
+  const { minWords, maxWords } = DIFFICULTIES[difficulty];
+  const pool = TEXTS.filter((t) => {
+    const wc = t.split(" ").length;
+    return wc >= minWords && wc <= maxWords;
+  });
+  return pool[Math.floor(Math.random() * pool.length)];
+};
+
+const formatTime = (s) => `00:${s < 10 ? `0${s}` : s}`;
+
+export default function TypingSpeedGame() {
+  const desktopInputRef = useRef(null);
+  const mobileInputRef = useRef(null);
+  const containerRef = useRef(null);
 
   // ---------------- STATE ----------------
   const [difficulty, setDifficulty] = useState("easy");
@@ -51,150 +129,113 @@ export default function TypingSpeedGame() {
 
   const [quote, setQuote] = useState("");
   const [typed, setTyped] = useState("");
+  const [round, setRound] = useState(0);
 
-  const [isPlaying, setIsPlaying] = useState(false); // timer running
+  // Timer starts on the first key press, not on "Start"
+  const [startedAt, setStartedAt] = useState(null);
+  const [now, setNow] = useState(0);
   const [isOver, setIsOver] = useState(false);
 
-  // 👇 NEW: game ready but timer not started until first key press
-  const [hasStartedTyping, setHasStartedTyping] = useState(false);
+  const bestWpm = useSyncExternalStore(
+    subscribeBest,
+    () => readBest(difficulty),
+    () => 0,
+  );
 
-  const [timeLeft, setTimeLeft] = useState(duration);
-
-  const [wpm, setWpm] = useState(0);
-  const [accuracy, setAccuracy] = useState(100);
-
-  const [bestWpm, setBestWpm] = useState(0);
-
-  // ---------------- BEST SCORE PER DIFFICULTY ----------------
-  useEffect(() => {
-    const saved = Number(
-      localStorage.getItem(`typing_best_wpm_${difficulty}`) || 0,
-    );
-    setBestWpm(saved);
-  }, [difficulty]);
-
-  // ---------------- HELPERS ----------------
-  const pickQuote = () => {
-    const { minWords, maxWords } = DIFFICULTIES[difficulty];
-
-    const filtered = texts.filter((t) => {
-      const wc = t.split(" ").length;
-      return wc >= minWords && wc <= maxWords;
-    });
-
-    const pool = filtered.length ? filtered : texts;
-    const random = pool[Math.floor(Math.random() * pool.length)];
-    setQuote(random);
-  };
+  // ---------------- DERIVED ----------------
+  const hasStartedTyping = startedAt !== null;
+  const isPlaying = hasStartedTyping && !isOver;
+  const elapsedSec = hasStartedTyping
+    ? Math.min((now - startedAt) / 1000, duration)
+    : 0;
+  const timeLeft = Math.max(0, Math.ceil(duration - elapsedSec));
+  const { wpm, accuracy } = calcStats(typed, quote, elapsedSec);
 
   // ---------------- GAME ----------------
-  const startGame = () => {
-    pickQuote();
+  const resetRound = (nextQuote) => {
+    setQuote(nextQuote);
     setTyped("");
-    setWpm(0);
-    setAccuracy(100);
-
-    setTimeLeft(duration);
-
-    // 👇 important changes
-    setHasStartedTyping(false); // timer not started yet
-    setIsPlaying(false); // timer OFF until first key press
+    setStartedAt(null);
+    setNow(0);
     setIsOver(false);
+  };
+
+  const startGame = () => {
+    resetRound(pickQuote(difficulty));
+    setRound((r) => r + 1);
 
     gsap.fromTo(
       containerRef.current,
       { scale: 0.98, opacity: 0.7 },
       { scale: 1, opacity: 1, duration: 0.35, ease: "power3.out" },
     );
-
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 100);
   };
 
-  const endGame = () => {
-    setIsPlaying(false);
+  const changeDifficulty = (key) => {
+    if (isPlaying) return;
+    setDifficulty(key);
+    resetRound("");
+  };
+
+  const finish = (finalTyped, endTime) => {
+    setNow(endTime);
     setIsOver(true);
-
-    setBestWpm((prev) => {
-      const newBest = Math.max(prev, wpm);
-      localStorage.setItem(`typing_best_wpm_${difficulty}`, String(newBest));
-      return newBest;
-    });
-
-    gsap.fromTo(
-      ".result-pop",
-      { y: 10, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.35, ease: "power3.out", stagger: 0.08 },
-    );
+    const elapsed = Math.min((endTime - startedAt) / 1000, duration);
+    saveBest(difficulty, calcStats(finalTyped, quote, elapsed).wpm);
   };
+
+  // Focus whichever input is visible (desktop and mobile layouts both render one)
+  useEffect(() => {
+    if (round === 0) return;
+    const input = [desktopInputRef.current, mobileInputRef.current].find(
+      (el) => el?.offsetParent,
+    );
+    input?.focus({ preventScroll: true });
+  }, [round]);
 
   // ---------------- TIMER ----------------
-  useEffect(() => {
-    let interval;
+  const onTick = useEffectEvent(() => {
+    const t = Date.now();
+    if (t - startedAt >= duration * 1000) finish(typed, t);
+    else setNow(t);
+  });
 
-    if (isPlaying && timeLeft > 0) {
-      interval = setInterval(() => setTimeLeft((t) => t - 1), 1000);
-    }
-
-    if (isPlaying && timeLeft === 0) {
-      endGame();
-    }
-
-    return () => clearInterval(interval);
-  }, [isPlaying, timeLeft]);
-
-  // reset when difficulty changes (only if not playing)
-  useEffect(() => {
-    if (!isPlaying) {
-      setTimeLeft(duration);
-      setTyped("");
-      setQuote("");
-      setWpm(0);
-      setAccuracy(100);
-      setIsOver(false);
-      setHasStartedTyping(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [difficulty]);
-
-  // ---------------- CALCULATE WPM + ACC ----------------
   useEffect(() => {
     if (!isPlaying) return;
+    const id = setInterval(onTick, TICK_MS);
+    return () => clearInterval(id);
+  }, [isPlaying]);
 
-    const elapsed = duration - timeLeft;
-    const minutes = elapsed / 60;
-
-    const correctChars = typed
-      .split("")
-      .filter((ch, i) => ch === quote[i]).length;
-
-    const words = correctChars / 5;
-    const calcWpm = minutes > 0 ? Math.round(words / minutes) : 0;
-    setWpm(calcWpm);
-
-    const totalTyped = typed.length;
-    const acc =
-      totalTyped > 0 ? Math.round((correctChars / totalTyped) * 100) : 100;
-    setAccuracy(acc);
-
-    if (typed.length >= quote.length && quote.length > 0) {
-      endGame();
-    }
-  }, [typed, timeLeft, isPlaying, quote, duration]);
+  // Result pop-in, once the result elements are actually rendered
+  useGSAP(
+    () => {
+      if (!isOver) return;
+      gsap.fromTo(
+        ".result-pop",
+        { y: 10, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.35, ease: "power3.out", stagger: 0.08 },
+      );
+    },
+    { scope: containerRef, dependencies: [isOver] },
+  );
 
   // ---------------- INPUT HANDLER ----------------
   const handleTyping = (value) => {
-    // do nothing if game is over
-    if (isOver) return;
+    if (isOver || !quote) return;
+
+    const t = Date.now();
+    const next = value.slice(0, quote.length);
+    setTyped(next);
 
     // first key press => start timer
-    if (!hasStartedTyping && quote.length > 0) {
-      setHasStartedTyping(true);
-      setIsPlaying(true);
+    if (!hasStartedTyping) {
+      setStartedAt(t);
+      setNow(t);
+    } else if (next.length === quote.length) {
+      finish(next, t);
+    } else {
+      setNow(t);
     }
-
-    setTyped(value);
   };
 
   // ---------------- RENDER QUOTE ----------------
@@ -202,10 +243,9 @@ export default function TypingSpeedGame() {
     quote.split("").map((ch, i) => {
       const typedChar = typed[i];
 
-      let className = "opacity-50";
-      if (typedChar == null) className = "opacity-40";
-      else if (typedChar === ch) className = "text-[var(--accent)]";
-      else className = "text-red-500";
+      let className = "opacity-40";
+      if (typedChar === ch) className = "text-[var(--accent)]";
+      else if (typedChar != null) className = "text-red-500";
 
       return (
         <span key={i} className={className}>
@@ -214,8 +254,42 @@ export default function TypingSpeedGame() {
       );
     });
 
+  const inputProps = {
+    value: typed,
+    onChange: (e) => handleTyping(e.target.value),
+    onPaste: (e) => e.preventDefault(),
+    disabled: !quote || isOver,
+    maxLength: quote.length || undefined,
+    "aria-label": "Type the quote",
+    autoComplete: "off",
+    autoCorrect: "off",
+    autoCapitalize: "off",
+    spellCheck: false,
+  };
+
+  const startButton = (extraClass) =>
+    !quote ? (
+      <button
+        type="button"
+        onClick={startGame}
+        className={`cursor-dot-zone w-full px-6 py-3 bg-[var(--accent)] text-black font-bold uppercase tracking-widest active:scale-95 transition ${extraClass}`}
+      >
+        Start
+      </button>
+    ) : (
+      <button
+        type="button"
+        onClick={startGame}
+        className="cursor-dot-zone w-full px-6 py-3 border border-[var(--border-color)] font-bold uppercase tracking-widest hover:bg-[var(--foreground)] hover:text-[var(--background)] transition"
+      >
+        <span className="flex items-center justify-center gap-2 pointer-events-none">
+          <FiRefreshCw aria-hidden="true" /> Restart
+        </span>
+      </button>
+    );
+
   return (
-    <section className="relative w-full py-24 px-4 bg-[var(--background)] text-[var(--foreground)] overflow-hidden select-none">
+    <section className="relative w-full py-24 px-4 bg-[var(--background)] text-[var(--foreground)] overflow-hidden">
       {/* Background */}
       <div
         className="absolute inset-0 opacity-[0.05] pointer-events-none"
@@ -245,8 +319,10 @@ export default function TypingSpeedGame() {
               return (
                 <button
                   key={key}
+                  type="button"
                   disabled={isPlaying}
-                  onClick={() => setDifficulty(key)}
+                  aria-pressed={active}
+                  onClick={() => changeDifficulty(key)}
                   className={`cursor-dot-zone px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition ${
                     active
                       ? "bg-[var(--accent)] text-black"
@@ -266,7 +342,7 @@ export default function TypingSpeedGame() {
           <div className="col-span-4">
             <div className="rounded-3xl border border-[var(--border-color)] bg-[var(--card-bg)] backdrop-blur-md p-6">
               <h3 className="text-sm font-mono uppercase tracking-widest opacity-70 mb-5 flex items-center gap-2">
-                <FiType /> Session HUD
+                <FiType aria-hidden="true" /> Session HUD
               </h3>
 
               <div className="grid grid-cols-2 gap-4">
@@ -274,33 +350,17 @@ export default function TypingSpeedGame() {
                 <Stat label="Accuracy" value={`${accuracy}%`} />
                 <Stat
                   label="Time"
-                  value={`00:${timeLeft < 10 ? `0${timeLeft}` : timeLeft}`}
+                  value={formatTime(timeLeft)}
                   danger={timeLeft <= 5 && isPlaying}
                 />
                 <Stat label="Best" value={bestWpm} />
               </div>
 
               <div className="mt-6 flex gap-3">
-                {!quote ? (
-                  <button
-                    onClick={startGame}
-                    className="cursor-dot-zone w-full px-6 py-3 bg-[var(--accent)] text-black font-bold uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition"
-                  >
-                    Start
-                  </button>
-                ) : (
-                  <button
-                    onClick={startGame}
-                    className="cursor-dot-zone w-full px-6 py-3 border border-[var(--border-color)] font-bold uppercase tracking-widest hover:bg-[var(--foreground)] hover:text-[var(--background)] transition"
-                  >
-                    <span className="flex items-center justify-center gap-2 pointer-events-none">
-                      <FiRefreshCw /> Restart
-                    </span>
-                  </button>
-                )}
+                {startButton("hover:scale-[1.02]")}
               </div>
 
-              {/* 👇 show this when quote is ready but timer not started */}
+              {/* shown when the quote is ready but the timer hasn't started */}
               {quote && !hasStartedTyping && !isOver && (
                 <p className="mt-4 text-xs font-mono uppercase tracking-widest opacity-60">
                   Press any key to start...
@@ -324,7 +384,7 @@ export default function TypingSpeedGame() {
           <div className="col-span-8">
             <div className="rounded-3xl border border-[var(--border-color)] bg-[var(--card-bg)] backdrop-blur-md p-6">
               {/* Quote */}
-              <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--background)]/40 p-6 font-mono text-lg leading-relaxed">
+              <div className="select-none rounded-2xl border border-[var(--border-color)] bg-[var(--background)]/40 p-6 font-mono text-lg leading-relaxed">
                 {quote ? (
                   renderQuote()
                 ) : (
@@ -335,10 +395,8 @@ export default function TypingSpeedGame() {
               {/* Input */}
               <div className="mt-6">
                 <input
-                  ref={inputRef}
-                  value={typed}
-                  onChange={(e) => handleTyping(e.target.value)}
-                  disabled={!quote || isOver}
+                  ref={desktopInputRef}
+                  {...inputProps}
                   placeholder={
                     !quote
                       ? "Press Start"
@@ -373,7 +431,7 @@ export default function TypingSpeedGame() {
                     : "opacity-70"
                 }`}
               >
-                00:{timeLeft < 10 ? `0${timeLeft}` : timeLeft}
+                {formatTime(timeLeft)}
               </span>
             </div>
 
@@ -383,23 +441,7 @@ export default function TypingSpeedGame() {
               <MiniStat label="BEST" value={bestWpm} />
             </div>
 
-            {!quote ? (
-              <button
-                onClick={startGame}
-                className="cursor-dot-zone w-full px-6 py-3 bg-[var(--accent)] text-black font-bold uppercase tracking-widest active:scale-95 transition"
-              >
-                Start
-              </button>
-            ) : (
-              <button
-                onClick={startGame}
-                className="cursor-dot-zone w-full px-6 py-3 border border-[var(--border-color)] font-bold uppercase tracking-widest hover:bg-[var(--foreground)] hover:text-[var(--background)] transition"
-              >
-                <span className="flex items-center justify-center gap-2 pointer-events-none">
-                  <FiRefreshCw /> Restart
-                </span>
-              </button>
-            )}
+            {startButton("")}
 
             {quote && !hasStartedTyping && !isOver && (
               <p className="mt-3 text-[11px] font-mono uppercase tracking-widest opacity-60 text-center">
@@ -409,7 +451,7 @@ export default function TypingSpeedGame() {
           </div>
 
           <div className="mt-5 rounded-3xl border border-[var(--border-color)] bg-[var(--card-bg)] backdrop-blur-md p-5">
-            <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--background)]/40 p-5 font-mono text-base leading-relaxed">
+            <div className="select-none rounded-2xl border border-[var(--border-color)] bg-[var(--background)]/40 p-5 font-mono text-base leading-relaxed">
               {quote ? (
                 renderQuote()
               ) : (
@@ -417,11 +459,10 @@ export default function TypingSpeedGame() {
               )}
             </div>
 
+            {/* text-base (16px) stops iOS Safari from zooming in on focus */}
             <input
-              ref={inputRef}
-              value={typed}
-              onChange={(e) => handleTyping(e.target.value)}
-              disabled={!quote || isOver}
+              ref={mobileInputRef}
+              {...inputProps}
               placeholder={
                 !quote
                   ? "Press Start"
@@ -429,7 +470,7 @@ export default function TypingSpeedGame() {
                     ? "Type here..."
                     : "Press any key to start..."
               }
-              className="cursor-dot-zone mt-4 w-full px-4 py-4 rounded-2xl bg-[var(--background)] border border-[var(--border-color)] focus:outline-none focus:border-[var(--accent)] font-mono text-sm"
+              className="cursor-dot-zone mt-4 w-full px-4 py-4 rounded-2xl bg-[var(--background)] border border-[var(--border-color)] focus:outline-none focus:border-[var(--accent)] font-mono text-base"
             />
 
             {isOver && (

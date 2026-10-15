@@ -15,12 +15,12 @@ const PROJECTS = [
   {
     title: "Best Mountain",
     desc: "Built a modern B2B website using Next.js, TypeScript, React.js, and Tailwind CSS, featuring responsive product and content sections for sustainable raw materials and industrial applications. Integrated dynamic content and downloadable resources to enhance product discovery, along with interactive UI elements and smooth animations for an engaging user experience. Optimized image loading and frontend performance for seamless cross-device compatibility in production.",
-    tags: ["React", "GSAP", "Tailwind css", "Node.js", "mongodb"],
+    tags: ["React", "GSAP", "Tailwind CSS", "Node.js", "MongoDB"],
   },
   {
     title: "Pulse Pariraksha",
     desc: "Developed a preventive healthcare booking platform featuring 30+ health check-up packages with slot reservation, WhatsApp confirmation, and dynamic package filtering. Built responsive sections for testimonials, FAQs, and the booking journey to improve user engagement. Integrated form-based lead capture and optimized performance across devices for a smooth user experience.",
-    tags: ["React", "GSAP", "Tailwind css", "Node.js", "PostgreSQL"],
+    tags: ["React", "GSAP", "Tailwind CSS", "Node.js", "PostgreSQL"],
   },
   {
     title: "Veloce Watch Store",
@@ -39,6 +39,11 @@ export default function Experience() {
 
   useGSAP(
     () => {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        gsap.set(".timeline-neon", { height: "100%" });
+        return;
+      }
+
       // Neon line fills up
       gsap.fromTo(
         ".timeline-neon",
@@ -97,6 +102,7 @@ export default function Experience() {
       rotateX,
       rotateY,
       duration: 0.4,
+      overwrite: "auto", // don't stack a new tween on every mousemove
       ease: "power2.out",
       transformPerspective: 1000,
       transformOrigin: "center",
@@ -110,6 +116,7 @@ export default function Experience() {
       rotateX: 0,
       rotateY: 0,
       duration: 0.6,
+      overwrite: "auto",
       ease: "elastic.out(1, 0.5)",
     });
   };
@@ -118,7 +125,7 @@ export default function Experience() {
     <section
       id="experience"
       ref={container}
-      className="relative py-20 md:py-32 px-5 sm:px-8 md:px-12 max-w-[1800px] mx-auto border-b border-[var(--border-color)] overflow-hidden scroll-mt-[120px]"
+      className="relative py-20 md:py-32 px-5 sm:px-8 md:px-12 max-w-[1800px] mx-auto border-b border-[var(--border-color)] overflow-clip scroll-mt-[120px]"
     >
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-14 md:mb-20">
         <div className="reveal-box">
@@ -177,7 +184,7 @@ export default function Experience() {
 
           <div className="space-y-6 md:space-y-8">
             <h5 className="reveal-box font-mono text-xs uppercase tracking-widest opacity-40 mb-6 md:mb-8">
-              // Deployed Modules
+              {"// Deployed Modules"}
             </h5>
 
             {PROJECTS.map((project, i) => (

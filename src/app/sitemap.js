@@ -1,16 +1,18 @@
+import { SITE_URL } from "@/lib/site";
+
 export default function sitemap() {
   return [
     {
-      url: "https://asharaf.com",
+      url: SITE_URL,
       lastModified: new Date(),
-      changeFrequency: "yearly",
+      changeFrequency: "monthly",
       priority: 1,
     },
     {
-      url: "https://asharaf.com/projects",
+      url: `${SITE_URL}/asharaf`,
       lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
+      changeFrequency: "yearly",
+      priority: 0.5,
     },
-  ]
+  ];
 }

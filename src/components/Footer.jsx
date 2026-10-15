@@ -21,6 +21,7 @@ export default function Footer() {
           </span>
 
           <FiArrowUpRight
+            aria-hidden="true"
             className=" text-[var(--accent)] text-6xl transition-all duration-300 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:-translate-y-2 group-hover:translate-x-2 "/>
         </a>
 
@@ -50,7 +51,7 @@ export default function Footer() {
       {/* ---------------- SOCIAL LINKS ---------------- */}
       <div className="mt-14 md:mt-20 flex flex-wrap justify-center gap-4 md:gap-16 text-xs md:text-sm font-bold uppercase tracking-widest">
         <SocialLink
-          href="https://www.linkedin.com/in/mohamed-asharaf-vp-63790a36b/?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
+          href="https://www.linkedin.com/in/mohamed-asharaf-vp-63790a36b/"
           label="LinkedIn"
         />
         <SocialLink
@@ -58,7 +59,7 @@ export default function Footer() {
           label="GitHub"
         />
         <SocialLink
-          href="https://www.instagram.com/ashrrff._?utm_source=qr&igsh=bXN2MzUwNXljeHNp"
+          href="https://www.instagram.com/ashrrff._"
           label="Instagram"
         />
       </div>
