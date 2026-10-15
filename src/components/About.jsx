@@ -9,7 +9,7 @@ gsap.registerPlugin(ScrollTrigger);
 const SPECS = [
   {
     label: "Core Framework",
-    value: "JavaScript (ES6+), TypeScript, React.js, Next.js",
+    value: "JavaScript (ES6+), TypeScript, React.js, Next.js, Node.js",
   },
   {
     label: "UI & Styling",
@@ -21,19 +21,36 @@ const SPECS = [
   },
   {
     label: "State & Data",
-    value: "Redux, Context API, React Hooks",
+    value: "Redux, Context API, React Hooks, React Query",
+  },
+  {
+    label: "Backend",
+    value:
+      "Node.js, Express.js, Next.js API Routes, Server Actions, MVC Architecture",
+  },
+  {
+    label: "Database & ORM",
+    value: "MongoDB, Mongoose, PostgreSQL, SQL",
   },
   {
     label: "API & Integration",
-    value: "REST APIs, Axios, JWT Authentication",
+    value:
+      "REST APIs, Axios, JWT Authentication, OAuth, WhatsApp API, Webhooks",
+  },
+  {
+    label: "Security",
+    value:
+      "Auth & Role-based Access, bcrypt, Input Validation, CORS, Env Secrets",
   },
   {
     label: "Tooling & Workflow",
-    value: "Git, GitHub, Vite, npm, CI/CD, Vercel, Netlify, VS Code",
+    value:
+      "Git, GitHub, Vite, npm, CI/CD, Vercel, Netlify, VS Code, Postman, Docker",
   },
   {
     label: "Performance",
-    value: "Code Splitting, Lazy Loading, Image Optimization, Perf Tuning",
+    value:
+      "Code Splitting, Lazy Loading, Image Optimization, Perf Tuning, Caching, DB Indexing",
   },
 ];
 
@@ -128,16 +145,17 @@ export default function About() {
           {/* BIO */}
           <div>
             <h3 className="about-bio text-5xl lg:text-7xl font-light leading-[1.1] text-[var(--foreground)] tracking-tighter mb-10">
-              Front End Developer{" "}
+              I turn ideas into{" "}
               <span className="text-[var(--accent)] font-normal">
-                scalable interfaces
+                full-stack products
               </span>{" "}
-              with precision.
+              people love to use.
             </h3>
 
             <div className="about-bio grid grid-cols-2 gap-8 text-lg lg:text-xl font-light opacity-70 leading-relaxed">
               <p>
-                I specialize in building modern, scalable user interfaces using{" "}
+                From the first API route to the final pixel, I own the whole
+                journey. I craft lightning-fast interfaces with{" "}
                 <strong className="text-[var(--foreground)] font-normal">
                   React.js
                 </strong>{" "}
@@ -145,24 +163,32 @@ export default function About() {
                 <strong className="text-[var(--foreground)] font-normal">
                   Next.js
                 </strong>
-                , focusing on performance, accessibility, and clean component
-                architecture.
+                , backed by secure, scalable{" "}
+                <strong className="text-[var(--foreground)] font-normal">
+                  Node.js
+                </strong>{" "}
+                services that just work.
               </p>
 
               <p>
-                I craft responsive, interactive experiences with{" "}
+                Data modelled cleanly in{" "}
                 <strong className="text-[var(--foreground)] font-normal">
-                  Tailwind CSS
+                  MongoDB
+                </strong>{" "}
+                and{" "}
+                <strong className="text-[var(--foreground)] font-normal">
+                  PostgreSQL
                 </strong>
-                , smooth animations powered by{" "}
+                . Motion that feels alive with{" "}
                 <strong className="text-[var(--foreground)] font-normal">
                   GSAP
                 </strong>{" "}
-                and immersive visuals using{" "}
+                and{" "}
                 <strong className="text-[var(--foreground)] font-normal">
                   Three.js
                 </strong>
-                , ensuring polished interfaces from interaction to pixel.
+                . The result: products that are fast, reliable, and impossible
+                to ignore.
               </p>
             </div>
           </div>
@@ -181,12 +207,13 @@ export default function About() {
                 >
                   <div className="divider-line w-full h-[1px] bg-[var(--border-color)] group-hover:bg-[var(--accent)] transition-colors duration-500 origin-left"></div>
 
-                  <div className="py-8 flex flex-row items-baseline justify-between gap-8 group-hover:pl-4 transition-all duration-300">
-                    <span className="text-sm font-mono text-[var(--accent)] uppercase tracking-widest w-52 shrink-0">
+                  {/* Fixed label column so every value starts on the same line */}
+                  <div className="py-7 grid grid-cols-[11rem_1fr] lg:grid-cols-[13rem_1fr] items-baseline gap-8 group-hover:translate-x-4 transition-transform duration-300">
+                    <span className="text-xs lg:text-sm font-mono text-[var(--accent)] uppercase tracking-widest">
                       {spec.label}
                     </span>
 
-                    <span className="text-2xl lg:text-3xl font-light text-[var(--foreground)] tracking-tight">
+                    <span className="text-xl lg:text-2xl font-light leading-snug text-[var(--foreground)] tracking-tight text-pretty">
                       {spec.value}
                     </span>
                   </div>
@@ -214,16 +241,17 @@ export default function About() {
 
         {/* Mobile Bio */}
         <h3 className="about-bio text-4xl font-light leading-[1.15] text-[var(--foreground)] tracking-tight mb-6">
-          Front End Developer{" "}
+          I turn ideas into{" "}
           <span className="text-[var(--accent)] font-normal">
-            scalable interfaces
+            full-stack products
           </span>{" "}
-          with precision.
+          people love to use.
         </h3>
 
         <div className="about-bio flex flex-col gap-5 text-base font-light opacity-75 leading-relaxed">
           <p>
-            I specialize in building modern, scalable user interfaces using{" "}
+            From the first API route to the final pixel, I own the whole
+            journey. I craft lightning-fast interfaces with{" "}
             <strong className="text-[var(--foreground)] font-normal">
               React.js
             </strong>{" "}
@@ -231,20 +259,27 @@ export default function About() {
             <strong className="text-[var(--foreground)] font-normal">
               Next.js
             </strong>
-            , focusing on performance, accessibility, and clean component
-            architecture.
+            , backed by secure, scalable{" "}
+            <strong className="text-[var(--foreground)] font-normal">
+              Node.js
+            </strong>{" "}
+            services that just work.
           </p>
 
           <p>
-            I craft responsive, interactive experiences with{" "}
+            Data modelled cleanly in{" "}
             <strong className="text-[var(--foreground)] font-normal">
-              Tailwind CSS
+              MongoDB
+            </strong>{" "}
+            and{" "}
+            <strong className="text-[var(--foreground)] font-normal">
+              PostgreSQL
             </strong>
-            , smooth animations powered by{" "}
+            . Motion that feels alive with{" "}
             <strong className="text-[var(--foreground)] font-normal">
               GSAP
             </strong>{" "}
-            and immersive visuals using{" "}
+            and{" "}
             <strong className="text-[var(--foreground)] font-normal">
               Three.js
             </strong>

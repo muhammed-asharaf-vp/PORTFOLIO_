@@ -10,6 +10,43 @@ gsap.registerPlugin(ScrollTrigger);
 const PROJECTS = [
   {
     id: "01",
+    title: "Orbit",
+    category: "Agency Project Management & Real-Time Chat Platform",
+    pitch:
+      "Full-stack team workspace with task workflows, calendar, and time logs, plus a real-time chat with direct messages, read receipts, reply and forward, and Cloudinary file sharing, delivered live over SSE with push notifications.",
+    stack: [
+      "React",
+      "Node.js",
+      "Express",
+      "PostgreSQL",
+      "Cloudinary",
+      "Docker",
+    ],
+    theme: "light",
+    link: "https://orbit.toruss.agency/",
+  },
+  {
+  id: "02",
+  title: "The Spanish Alchemist",
+  category: "D2C Skincare E-commerce Store",
+  pitch:
+    "Conversion-focused Shopify storefront for a Spanish skincare brand, with routine bundles, shop-by-skin-type discovery, quick add-to-cart, customer reviews, and a redesigned product listing experience.",
+  stack: ["Shopify", "Liquid", "JavaScript", "CSS", "Klaviyo"],
+  theme: "dark",
+  link: "https://thespanishalchemist.com/",
+},
+{
+  id: "03",
+  title: "Oceanus Grandeur",
+  category: "Real Estate Lead Generation Platform",
+  pitch:
+    "High-converting landing site for Palakkad's largest residential township, with apartment configurators, a refundable booking offer, live project updates, and site-visit forms that capture leads straight into a Supabase backend, tracked across Google Ads and Meta.",
+  stack: ["HTML", "CSS", "JavaScript", "Supabase", "PostgreSQL"],
+  theme: "light",
+  link: "https://oceanusgrandeurpalakkad.com/",
+},
+  {
+    id: "04",
     title: "Eram Education",
     category: "Multi-Institution Education Management Platform",
     pitch:
@@ -19,7 +56,7 @@ const PROJECTS = [
     link: "https://eram.edu.in/",
   },
   {
-    id: "02",
+    id: "05",
     title: "Best Mountain",
     category: "Building Materials Business & Catalog Platform",
     pitch:
@@ -29,7 +66,7 @@ const PROJECTS = [
     link: "https://www.bm-materials.com/",
   },
   {
-    id: "03",
+    id: "06",
     title: "Pulse Pariraksha",
     category: "Healthcare Diagnostics & Appointment Booking Platform",
     pitch:
@@ -39,7 +76,7 @@ const PROJECTS = [
     link: "https://pariraksha.pulsepkd.com/",
   },
   {
-    id: "04",
+    id: "07",
     title: "Veloce",
     category: "Premium Watch Showcase Website",
     pitch:
@@ -49,7 +86,7 @@ const PROJECTS = [
     link: "https://vel0ce.vercel.app",
   },
   {
-    id: "05",
+    id: "08",
     title: "Chatloop",
     category: "Secure Social Networking Platform",
     pitch:

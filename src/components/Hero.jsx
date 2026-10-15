@@ -69,7 +69,7 @@ export default function Hero({ ready }) {
     >
       <div className="w-full max-w-6xl text-center md:text-left">
         <p className="text-[var(--accent)] font-mono mb-4 md:mb-5 tracking-widest uppercase text-xs md:text-sm">
-          Front End Developer
+         Full Stack Developer
         </p>
 
         <h1
