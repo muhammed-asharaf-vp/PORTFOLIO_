@@ -1,10 +1,9 @@
 "use client";
 import { useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
-
-gsap.registerPlugin(ScrollTrigger);
+import { gsap, useGSAP } from "@/lib/gsap";
+import SplitReveal from "@/components/text/SplitReveal";
+import ScrambleIn from "@/components/text/ScrambleIn";
+import ScrollHighlight from "@/components/text/ScrollHighlight";
 
 const SPECS = [
   {
@@ -75,20 +74,6 @@ export default function About() {
             ? ".about-desktop"
             : ".about-mobile";
 
-          // BIO animation
-          gsap.from(`${scope} .about-bio`, {
-            scrollTrigger: {
-              trigger: container.current,
-              start: "top 75%",
-              toggleActions: "play none none reverse",
-            },
-            y: 40,
-            opacity: 0,
-            duration: 0.9,
-            stagger: 0.08,
-            ease: "power3.out",
-          });
-
           // Specs animation
           gsap.utils.toArray(`${scope} .spec-row`).forEach((row, i) => {
             gsap.from(row, {
@@ -134,9 +119,9 @@ export default function About() {
       <div className="about-desktop hidden md:grid grid-cols-12 gap-x-12 gap-y-16">
         {/* Sticky Profile */}
         <div className="md:col-span-3">
-          <h2 className="about-bio text-xs font-mono text-[var(--accent)] uppercase tracking-[0.2em] sticky top-32 flex items-center gap-3">
+          <h2 className="text-xs font-mono text-[var(--accent)] uppercase tracking-[0.2em] sticky top-32 flex items-center gap-3">
             <span className="w-2 h-2 bg-[var(--accent)] rounded-full animate-pulse"></span>
-            ( 01 ) Profile
+            <ScrambleIn>( 01 ) Profile</ScrambleIn>
           </h2>
         </div>
 
@@ -144,16 +129,19 @@ export default function About() {
         <div className="md:col-span-9 flex flex-col gap-24">
           {/* BIO */}
           <div>
-            <h3 className="about-bio text-5xl lg:text-7xl font-light leading-[1.1] text-[var(--foreground)] tracking-tighter mb-10">
+            <ScrollHighlight
+              as="h3"
+              className="text-5xl lg:text-7xl font-light leading-[1.1] text-[var(--foreground)] tracking-tighter mb-10"
+            >
               I turn ideas into{" "}
               <span className="text-[var(--accent)] font-normal">
                 full-stack products
               </span>{" "}
               people love to use.
-            </h3>
+            </ScrollHighlight>
 
-            <div className="about-bio grid grid-cols-2 gap-8 text-lg lg:text-xl font-light opacity-70 leading-relaxed">
-              <p>
+            <div className="grid grid-cols-2 gap-8 text-lg lg:text-xl font-light opacity-70 leading-relaxed">
+              <SplitReveal as="p" type="lines" stagger={0.1}>
                 From the first API route to the final pixel, I own the whole
                 journey. I craft lightning-fast interfaces with{" "}
                 <strong className="text-[var(--foreground)] font-normal">
@@ -168,9 +156,9 @@ export default function About() {
                   Node.js
                 </strong>{" "}
                 services that just work.
-              </p>
+              </SplitReveal>
 
-              <p>
+              <SplitReveal as="p" type="lines" stagger={0.1}>
                 Data modelled cleanly in{" "}
                 <strong className="text-[var(--foreground)] font-normal">
                   MongoDB
@@ -189,15 +177,18 @@ export default function About() {
                 </strong>
                 . The result: products that are fast, reliable, and impossible
                 to ignore.
-              </p>
+              </SplitReveal>
             </div>
           </div>
 
           {/* SPECS */}
           <div className="w-full">
-            <h4 className="about-bio font-mono text-xs uppercase tracking-widest opacity-40 mb-8">
+            <ScrambleIn
+              as="h4"
+              className="block font-mono text-xs uppercase tracking-widest opacity-40 mb-8"
+            >
               {"// Technical Specifications"}
-            </h4>
+            </ScrambleIn>
 
             <div className="flex flex-col">
               {SPECS.map((spec, i) => (
@@ -209,9 +200,9 @@ export default function About() {
 
                   {/* Fixed label column so every value starts on the same line */}
                   <div className="py-7 grid grid-cols-[11rem_1fr] lg:grid-cols-[13rem_1fr] items-baseline gap-8 group-hover:translate-x-4 transition-transform duration-300">
-                    <span className="text-xs lg:text-sm font-mono text-[var(--accent)] uppercase tracking-widest">
+                    <ScrambleIn className="text-xs lg:text-sm font-mono text-[var(--accent)] uppercase tracking-widest">
                       {spec.label}
-                    </span>
+                    </ScrambleIn>
 
                     <span className="text-xl lg:text-2xl font-light leading-snug text-[var(--foreground)] tracking-tight text-pretty">
                       {spec.value}
@@ -228,10 +219,10 @@ export default function About() {
       {/* ---------------- MOBILE UI ---------------- */}
       <div className="about-mobile block md:hidden">
         {/* Mobile Header */}
-        <div className="about-bio flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-8">
           <h2 className="text-xs font-mono text-[var(--accent)] uppercase tracking-[0.2em] flex items-center gap-3">
             <span className="w-2 h-2 bg-[var(--accent)] rounded-full animate-pulse"></span>
-            Profile
+            <ScrambleIn>Profile</ScrambleIn>
           </h2>
 
           <span className="text-xs font-mono opacity-40 tracking-widest">
@@ -240,16 +231,19 @@ export default function About() {
         </div>
 
         {/* Mobile Bio */}
-        <h3 className="about-bio text-4xl font-light leading-[1.15] text-[var(--foreground)] tracking-tight mb-6">
+        <ScrollHighlight
+          as="h3"
+          className="text-4xl font-light leading-[1.15] text-[var(--foreground)] tracking-tight mb-6"
+        >
           I turn ideas into{" "}
           <span className="text-[var(--accent)] font-normal">
             full-stack products
           </span>{" "}
           people love to use.
-        </h3>
+        </ScrollHighlight>
 
-        <div className="about-bio flex flex-col gap-5 text-base font-light opacity-75 leading-relaxed">
-          <p>
+        <div className="flex flex-col gap-5 text-base font-light opacity-75 leading-relaxed">
+          <SplitReveal as="p" type="lines" stagger={0.1}>
             From the first API route to the final pixel, I own the whole
             journey. I craft lightning-fast interfaces with{" "}
             <strong className="text-[var(--foreground)] font-normal">
@@ -264,9 +258,9 @@ export default function About() {
               Node.js
             </strong>{" "}
             services that just work.
-          </p>
+          </SplitReveal>
 
-          <p>
+          <SplitReveal as="p" type="lines" stagger={0.1}>
             Data modelled cleanly in{" "}
             <strong className="text-[var(--foreground)] font-normal">
               MongoDB
@@ -284,14 +278,17 @@ export default function About() {
               Three.js
             </strong>
             .
-          </p>
+          </SplitReveal>
         </div>
 
         {/* Mobile Specs */}
         <div className="mt-12">
-          <h4 className="about-bio font-mono text-xs uppercase tracking-widest opacity-40 mb-6">
+          <ScrambleIn
+            as="h4"
+            className="block font-mono text-xs uppercase tracking-widest opacity-40 mb-6"
+          >
             {"// Technical Specs"}
-          </h4>
+          </ScrambleIn>
 
           <div className="flex flex-col gap-4">
             {SPECS.map((spec, i) => (
@@ -301,9 +298,12 @@ export default function About() {
               >
                 <div className="divider-line w-full h-[1px] bg-[var(--border-color)] mb-4"></div>
 
-                <p className="text-xs font-mono text-[var(--accent)] uppercase tracking-widest mb-2">
+                <ScrambleIn
+                  as="p"
+                  className="text-xs font-mono text-[var(--accent)] uppercase tracking-widest mb-2"
+                >
                   {spec.label}
-                </p>
+                </ScrambleIn>
 
                 <p className="text-lg font-light text-[var(--foreground)] leading-snug">
                   {spec.value}

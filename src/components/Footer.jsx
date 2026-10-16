@@ -1,4 +1,7 @@
 import { FiArrowUpRight } from "react-icons/fi";
+import SplitReveal from "@/components/text/SplitReveal";
+import ScrambleIn from "@/components/text/ScrambleIn";
+import RollText from "@/components/text/RollText";
 
 export default function Footer() {
   return (
@@ -7,7 +10,7 @@ export default function Footer() {
       className="py-24 md:py-32 px-5 sm:px-8 flex flex-col items-center justify-center text-center bg-[var(--background)] border-t border-[var(--border-color)]"
     >
       <p className="font-mono text-[var(--accent)] mb-8 uppercase tracking-widest text-xs md:text-sm">
-        Ready to Collaborate?
+        <ScrambleIn>Ready to Collaborate?</ScrambleIn>
       </p>
 
       {/* ---------------- DESKTOP UI ---------------- */}
@@ -16,9 +19,17 @@ export default function Footer() {
           href="mailto:mohamedasharafvpp@gmail.com"
           className="cursor-dot-zone group relative inline-flex items-center gap-4"
         >
-          <span className="font-display text-[7vw] font-black uppercase leading-[0.9] tracking-tighter text-[var(--foreground)] transition-colors duration-300 group-hover:text-[var(--accent)]">
+          <SplitReveal
+            as="span"
+            type="chars"
+            effect="tilt"
+            scrub
+            start="top 95%"
+            stagger={0.05}
+            className="font-display text-[7vw] font-black uppercase leading-[0.9] tracking-tighter text-[var(--foreground)] transition-colors duration-300 group-hover:text-[var(--accent)]"
+          >
             Let&apos;s Talk
-          </span>
+          </SplitReveal>
 
           <FiArrowUpRight
             aria-hidden="true"
@@ -33,9 +44,15 @@ export default function Footer() {
 
       {/* ---------------- MOBILE UI ---------------- */}
       <div className="block md:hidden w-full max-w-md">
-        <h2 className="font-display text-3xl font-black uppercase tracking-tight text-[var(--foreground)] leading-[1]">
+        <SplitReveal
+          as="h2"
+          type="chars"
+          effect="tilt"
+          stagger={0.04}
+          className="font-display text-3xl font-black uppercase tracking-tight text-[var(--foreground)] leading-[1]"
+        >
           Let&apos;s Talk
-        </h2>
+        </SplitReveal>
 
         <p className="mt-3 text-sm opacity-70 font-light leading-relaxed">
           Available for freelance collaborations and full-time positions.
@@ -82,7 +99,7 @@ function SocialLink({ href, label }) {
       rel="noopener noreferrer"
       className=" cursor-dot-zone relative group hover:text-[var(--accent)] transition-colors px-5 py-3 rounded-full border border-[var(--border-color)] md:border-none md:px-0 md:py-0 "
     >
-      {label}
+      <RollText>{label}</RollText>
 
       {/* underline only for desktop */}
       <span className="hidden md:block absolute -bottom-2 left-0 w-0 h-[2px] bg-[var(--accent)] group-hover:w-full transition-all duration-300" />

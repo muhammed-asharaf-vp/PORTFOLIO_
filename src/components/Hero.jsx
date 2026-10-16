@@ -1,8 +1,12 @@
 "use client";
 
 import { useRef } from "react";
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
+import {
+  gsap,
+  prefersReducedMotion,
+  SCRAMBLE_CHARS,
+  useGSAP,
+} from "@/lib/gsap";
 
 const SKILLS = [
   "React.js",
@@ -31,32 +35,48 @@ export default function Hero({ ready }) {
       // Wait until the preloader is gone, otherwise the intro plays hidden under it
       if (!ready) return;
 
-      const reducedMotion = window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      ).matches;
-      if (reducedMotion) return;
+      if (prefersReducedMotion()) return;
 
-      const isMobile = window.innerWidth < 768;
+      const label = container.current.querySelector(".hero-label");
 
       gsap
         .timeline({ delay: 0.1 })
+        // Letters rise out of each line's mask with a slight tilt
         .from(".hero-char", {
-          y: isMobile ? 25 : 60,
-          opacity: 0,
-          stagger: isMobile ? 0.01 : 0.02,
-          duration: isMobile ? 0.45 : 0.65,
-          ease: "power2.out",
+          yPercent: 115,
+          rotate: 10,
+          transformOrigin: "0% 100%",
+          duration: 1.1,
+          stagger: 0.035,
+          ease: "expo.out",
         })
+        // Role label decodes like the preloader
+        .to(
+          label,
+          {
+            duration: 1.1,
+            ease: "none",
+            scrambleText: {
+              text: label.textContent,
+              chars: SCRAMBLE_CHARS,
+              revealDelay: 0.3,
+              speed: 0.5,
+            },
+          },
+          0.15,
+        )
+        // Stack chips blur in one after another
         .from(
           ".hero-pill",
           {
+            y: 14,
             opacity: 0,
-            y: isMobile ? 6 : 10,
-            stagger: isMobile ? 0.03 : 0.05,
-            duration: isMobile ? 0.25 : 0.35,
-            ease: "power2.out",
+            filter: "blur(8px)",
+            duration: 0.6,
+            stagger: 0.045,
+            ease: "power3.out",
           },
-          "-=0.2",
+          "-=0.75",
         );
     },
     { scope: container, dependencies: [ready] },
@@ -68,7 +88,7 @@ export default function Hero({ ready }) {
       className="min-h-screen flex items-center justify-center px-5 sm:px-8 md:px-12 pt-24 pb-16"
     >
       <div className="w-full max-w-6xl text-center md:text-left">
-        <p className="text-[var(--accent)] font-mono mb-4 md:mb-5 tracking-widest uppercase text-xs md:text-sm">
+        <p className="hero-label text-[var(--accent)] font-mono mb-4 md:mb-5 tracking-widest uppercase text-xs md:text-sm">
           Full Stack Developer
         </p>
 
@@ -76,15 +96,12 @@ export default function Hero({ ready }) {
           aria-label="Mohamed Asharaf"
           className="font-display text-[9.5vw] leading-[1] tracking-tight md:text-[min(8vw,7rem)] md:leading-[0.92] md:tracking-tighter font-black uppercase text-[var(--foreground)]"
         >
-          <span
-            aria-hidden="true"
-            className="block overflow-hidden md:overflow-visible"
-          >
+          <span aria-hidden="true" className="block overflow-hidden">
             {splitChars("MOHAMED")}
           </span>
           <span
             aria-hidden="true"
-            className="block overflow-hidden md:overflow-visible md:ml-[5vw]"
+            className="block overflow-hidden md:ml-[5vw]"
           >
             {splitChars("ASHARAF")}
             <span className="hero-char inline-block text-[var(--accent)]">

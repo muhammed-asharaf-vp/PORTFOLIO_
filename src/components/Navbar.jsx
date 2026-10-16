@@ -3,8 +3,8 @@ import { useTheme } from "next-themes";
 import { useState, useRef } from "react";
 import { FiSun, FiMoon, FiDownload, FiMenu, FiX } from "react-icons/fi";
 import Link from "next/link";
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
+import { gsap, useGSAP } from "@/lib/gsap";
+import RollText from "@/components/text/RollText";
 
 const NAV_LINKS = [
   { name: "Experience", href: "#experience" },
@@ -106,13 +106,13 @@ export default function Navbar({ ready = true }) {
               key={link.name}
               href={link.href}
               onClick={(e) => handleScroll(e, link.href)}
-              className={`cursor-dot-zone relative px-4 py-2 text-xs font-bold uppercase tracking-wide rounded-full transition-all duration-300 ${
+              className={`cursor-dot-zone group relative px-4 py-2 text-xs font-bold uppercase tracking-wide rounded-full transition-all duration-300 ${
                 activeTab === link.href
                   ? "bg-[var(--foreground)] text-[var(--background)]"
                   : "text-[var(--foreground)]/60 hover:text-[var(--foreground)] hover:bg-[var(--foreground)]/5"
               }`}
             >
-              {link.name}
+              <RollText>{link.name}</RollText>
             </Link>
           ))}
         </div>
@@ -123,11 +123,13 @@ export default function Navbar({ ready = true }) {
         <div className="flex items-center gap-1.5 md:gap-2">
           {/* RESUME */}
           <a
-            href="/asharaf.cv.pdf"
+            href="/public/ashraf full stack.pdf"
             download="Mohamed_Asharaf_Resume.pdf"
             className="cursor-dot-zone group flex items-center gap-2 px-3 py-2 md:py-2 text-xs font-bold uppercase rounded-full transition-all border border-[var(--border-color)] bg-[var(--card-bg)] text-[var(--foreground)] hover:bg-[var(--accent)] hover:text-black active:scale-95"
           >
-            <span className="hidden sm:inline">Resume</span>
+            <span className="hidden sm:inline">
+              <RollText>Resume</RollText>
+            </span>
             <span className="hidden min-[360px]:inline sm:hidden">CV</span>
             <FiDownload
               aria-hidden="true"
@@ -185,7 +187,7 @@ export default function Navbar({ ready = true }) {
                   : "text-[var(--foreground)] hover:bg-[var(--foreground)]/5"
               }`}
             >
-              {link.name}
+              <RollText>{link.name}</RollText>
               <span className="pointer-events-none opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300">
                 →
               </span>

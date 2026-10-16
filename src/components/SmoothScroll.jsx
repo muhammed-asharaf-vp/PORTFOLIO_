@@ -1,10 +1,6 @@
 "use client";
 import { useEffect } from "react";
-import Lenis from "lenis";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
+import { gsap, prefersReducedMotion, ScrollTrigger } from "@/lib/gsap";
 
 export default function SmoothScroll({ children }) {
   useEffect(() => {
@@ -15,23 +11,31 @@ export default function SmoothScroll({ children }) {
     if (window.innerWidth < 768) return;
 
     //  Respect reduced-motion users: native scrolling
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (prefersReducedMotion()) return;
 
-    const lenis = new Lenis({
-      duration: 0.75,
-      smoothWheel: true,
-    });
-
-    window.lenis = lenis;
-
-    lenis.on("scroll", ScrollTrigger.update);
-
+    let lenis;
+    let cancelled = false;
     const raf = (time) => lenis.raf(time * 1000);
 
-    gsap.ticker.add(raf);
-    gsap.ticker.lagSmoothing(0);
+    // Loaded on demand, so phones never download Lenis at all
+    import("lenis").then(({ default: Lenis }) => {
+      if (cancelled) return;
+
+      lenis = new Lenis({
+        duration: 0.75,
+        smoothWheel: true,
+      });
+
+      window.lenis = lenis;
+
+      lenis.on("scroll", ScrollTrigger.update);
+      gsap.ticker.add(raf);
+      gsap.ticker.lagSmoothing(0);
+    });
 
     return () => {
+      cancelled = true;
+      if (!lenis) return;
       window.lenis = null;
       gsap.ticker.remove(raf);
       lenis.destroy();

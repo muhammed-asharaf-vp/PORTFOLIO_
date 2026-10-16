@@ -7,9 +7,10 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
+import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { FiRefreshCw, FiType } from "react-icons/fi";
+import SplitReveal from "@/components/text/SplitReveal";
+import TypeIn from "@/components/text/TypeIn";
 
 const DIFFICULTIES = {
   easy: {
@@ -184,6 +185,11 @@ export default function TypingSpeedGame() {
     saveBest(difficulty, calcStats(finalTyped, quote, elapsed).wpm);
   };
 
+  // Mounted lazily (LazyGame): page height below changed, so re-measure triggers
+  useEffect(() => {
+    ScrollTrigger.refresh();
+  }, []);
+
   // Focus whichever input is visible (desktop and mobile layouts both render one)
   useEffect(() => {
     if (round === 0) return;
@@ -303,12 +309,20 @@ export default function TypingSpeedGame() {
       <div ref={containerRef} className="max-w-5xl mx-auto relative z-10">
         {/* Title */}
         <div className="text-center mb-10">
-          <h2 className="font-display text-2xl sm:text-3xl md:text-5xl font-black uppercase tracking-tighter">
+          {/* Letters flip in like keys being struck */}
+          <SplitReveal
+            as="h2"
+            type="chars"
+            effect="flip"
+            stagger={0.04}
+            className="font-display text-2xl sm:text-3xl md:text-5xl font-black uppercase tracking-tighter"
+          >
             Typing <span className="text-[var(--accent)]">Speed</span>
-          </h2>
-          <p className="mt-3 text-sm md:text-base opacity-70">
+          </SplitReveal>
+          {/* Subtitle types itself out — it's a typing game */}
+          <TypeIn className="mt-3 text-sm md:text-base opacity-70">
             Select difficulty and beat your best WPM.
-          </p>
+          </TypeIn>
         </div>
 
         {/* Difficulty Selector */}

@@ -107,9 +107,49 @@ section {
   }
 }
 
+/* ================= TEXT ANIMATIONS ================= */
+/* Hover letter-roll (components/text/RollText.jsx).
+   Each letter's copy is its own text-shadow one line below; hovering slides both up. */
+.roll {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  line-height: 1.2;
+}
+
+.roll-char {
+  display: inline-block;
+  text-shadow: 0 1.2em currentColor;
+  transition: transform 0.5s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.group:hover .roll-char,
+.roll:hover .roll-char {
+  transform: translateY(-1.2em);
+}
+
+/* Typewriter caret (components/text/TypeIn.jsx) */
+.type-caret {
+  margin-left: 0.1em;
+  color: var(--accent);
+  animation: caret-blink 1s steps(1) infinite;
+}
+
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-spin-slow,
-  .animate-pulse {
+  .animate-pulse,
+  .type-caret {
     animation: none;
+  }
+
+  .roll-char {
+    transition: none;
   }
 }

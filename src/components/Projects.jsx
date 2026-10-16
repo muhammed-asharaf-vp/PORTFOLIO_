@@ -1,11 +1,10 @@
 "use client";
 import { useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
 import { FiArrowUpRight } from "react-icons/fi";
-
-gsap.registerPlugin(ScrollTrigger);
+import { gsap, SCRAMBLE_CHARS, SplitText, useGSAP } from "@/lib/gsap";
+import SplitReveal from "@/components/text/SplitReveal";
+import ScrambleIn from "@/components/text/ScrambleIn";
+import RollText from "@/components/text/RollText";
 
 const PROJECTS = [
   {
@@ -104,30 +103,92 @@ export default function Projects() {
     () => {
       const mm = gsap.matchMedia();
 
-      mm.add("(min-width: 1024px)", () => {
-        const el = scrollContainer.current;
-        const wrap = container.current;
-        if (!el || !wrap) return;
+      // Card title letters rise from masks while the category decodes.
+      // On desktop they're driven by the horizontal scroll (containerAnimation).
+      const revealCards = (cards, triggerFor) => {
+        cards.forEach((card) => {
+          const title = card.querySelector(".project-title");
+          const category = card.querySelector(".project-category");
+          const scrollTrigger = { ...triggerFor(card), once: true };
 
-        //  only needed scroll distance — re-measured on every refresh/resize
-        const getDistance = () =>
-          Math.max(0, el.scrollWidth - window.innerWidth);
-
-        gsap.to(el, {
-          x: () => -getDistance(),
-          ease: "none",
-          force3D: true,
-          scrollTrigger: {
-            trigger: wrap,
-            start: "top top",
-            end: () => `+=${getDistance()}`,
-            scrub: 1,
-            pin: true,
-            invalidateOnRefresh: true,
-            anticipatePin: 1,
-          },
+          const split = SplitText.create(title, {
+            type: "words,chars",
+            mask: "chars",
+          });
+          gsap.from(split.chars, {
+            yPercent: 110,
+            rotate: 6,
+            transformOrigin: "0% 100%",
+            duration: 1,
+            stagger: 0.02,
+            ease: "expo.out",
+            scrollTrigger,
+          });
+          gsap.to(category, {
+            duration: 1,
+            ease: "none",
+            scrambleText: {
+              text: category.textContent,
+              chars: SCRAMBLE_CHARS,
+              revealDelay: 0.2,
+              speed: 0.5,
+            },
+            scrollTrigger,
+          });
         });
-      });
+      };
+
+      mm.add(
+        {
+          desktop: "(min-width: 1024px)",
+          mobile: "(max-width: 1023px)",
+          motion: "(prefers-reduced-motion: no-preference)",
+        },
+        (ctx) => {
+          const { desktop, motion } = ctx.conditions;
+          const wrap = container.current;
+
+          if (!desktop) {
+            if (motion) {
+              revealCards(
+                wrap.querySelectorAll('[data-layout="mobile"] .project-card'),
+                (card) => ({ trigger: card, start: "top 80%" }),
+              );
+            }
+            return;
+          }
+
+          const el = scrollContainer.current;
+          if (!el || !wrap) return;
+
+          //  only needed scroll distance — re-measured on every refresh/resize
+          const getDistance = () =>
+            Math.max(0, el.scrollWidth - window.innerWidth);
+
+          const tween = gsap.to(el, {
+            x: () => -getDistance(),
+            ease: "none",
+            force3D: true,
+            scrollTrigger: {
+              trigger: wrap,
+              start: "top top",
+              end: () => `+=${getDistance()}`,
+              scrub: 1,
+              pin: true,
+              invalidateOnRefresh: true,
+              anticipatePin: 1,
+            },
+          });
+
+          if (motion) {
+            revealCards(el.querySelectorAll(".project-card"), (card) => ({
+              trigger: card,
+              containerAnimation: tween,
+              start: "left 85%",
+            }));
+          }
+        },
+      );
     },
     { scope: container },
   );
@@ -149,7 +210,10 @@ export default function Projects() {
       />
 
       {/* ---------------- DESKTOP UI (Horizontal Scroll) ---------------- */}
-      <div className="hidden lg:block lg:h-screen lg:overflow-hidden">
+      <div
+        data-layout="desktop"
+        className="hidden lg:block lg:h-screen lg:overflow-hidden"
+      >
         <div
           ref={scrollContainer}
           className="relative z-10 flex flex-row gap-24 px-24 items-center h-full will-change-transform"
@@ -159,21 +223,32 @@ export default function Projects() {
             <div className="mb-6 flex items-center gap-4">
               <span className="w-12 h-[2px] bg-[var(--accent)]"></span>
               <h2 className="font-mono text-5xl uppercase tracking-widest text-[var(--accent)]">
-                Projects
+                <ScrambleIn>Projects</ScrambleIn>
               </h2>
             </div>
 
             <p className="font-display text-[6.5vw] font-black text-[var(--foreground)] leading-[0.85] tracking-tighter uppercase">
               <br />
-              <span className="text-transparent text-stroke-foreground">
+              <SplitReveal
+                as="span"
+                type="chars"
+                effect="tilt"
+                stagger={0.06}
+                duration={1.2}
+                className="inline-block text-transparent text-stroke-foreground"
+              >
                 Work
-              </span>
+              </SplitReveal>
             </p>
 
-            <p className="mt-8 text-xl opacity-60 max-w-md font-light leading-relaxed">
+            <SplitReveal
+              as="p"
+              type="lines"
+              className="mt-8 text-xl opacity-60 max-w-md font-light leading-relaxed"
+            >
               Building responsive, high-performance frontends with React,
               Next.js, and modern UI systems.
-            </p>
+            </SplitReveal>
           </div>
 
           {/* Projects */}
@@ -190,14 +265,14 @@ export default function Projects() {
           <div className="w-[40vw] flex flex-col items-center justify-center shrink-0 z-10 gap-8">
             <div className="w-full h-[1px] bg-[var(--foreground)] opacity-20"></div>
             <p className="font-mono text-sm uppercase tracking-[0.2em] text-[var(--foreground)]">
-              Have a concept?
+              <ScrambleIn>Have a concept?</ScrambleIn>
             </p>
 
             <a
               href="mailto:mohamedasharafvpp@gmail.com"
               className=" cursor-dot-zone group relative inline-block font-display text-[4.5vw] font-black uppercase tracking-tight text-[var(--foreground)] transition-all duration-300 ease-out hover:text-[var(--accent)] hover:-translate-y-1 "
             >
-              Hire Me
+              <RollText>Hire Me</RollText>
               <span className="absolute left-0 -bottom-3 h-[4px] w-0 bg-[var(--accent)] rounded-full transition-all duration-300 ease-out group-hover:w-full" />
             </a>
           </div>
@@ -205,19 +280,32 @@ export default function Projects() {
       </div>
 
       {/* ---------------- MOBILE UI (Vertical Scroll) ---------------- */}
-      <div className="block lg:hidden relative z-10 px-5 sm:px-8 py-20">
+      <div
+        data-layout="mobile"
+        className="block lg:hidden relative z-10 px-5 sm:px-8 py-20"
+      >
         {/* Mobile Header */}
         <div className="mb-10">
           <p className="font-mono text-xs uppercase tracking-widest text-[var(--accent)] mb-3">
-            ( Projects )
+            <ScrambleIn>( Projects )</ScrambleIn>
           </p>
-          <h2 className="font-display text-3xl sm:text-4xl font-black uppercase tracking-tight text-[var(--foreground)]">
-            Code in Action{" "}
-          </h2>
-          <p className="mt-4 text-sm sm:text-base opacity-70 max-w-xl leading-relaxed">
+          <SplitReveal
+            as="h2"
+            type="chars"
+            effect="tilt"
+            stagger={0.03}
+            className="font-display text-3xl sm:text-4xl font-black uppercase tracking-tight text-[var(--foreground)]"
+          >
+            Code in Action
+          </SplitReveal>
+          <SplitReveal
+            as="p"
+            type="lines"
+            className="mt-4 text-sm sm:text-base opacity-70 max-w-xl leading-relaxed"
+          >
             Building responsive, high-performance frontends with React, Next.js,
             and modern UI systems.
-          </p>
+          </SplitReveal>
         </div>
 
         {/* Mobile Cards */}
@@ -232,13 +320,13 @@ export default function Projects() {
         {/* Mobile CTA */}
         <div className="mt-14 rounded-3xl border border-[var(--border-color)] p-8 text-center">
           <p className="font-mono text-xs uppercase tracking-[0.2em] opacity-70 mb-4">
-            Have a concept?
+            <ScrambleIn>Have a concept?</ScrambleIn>
           </p>
           <a
             href="mailto:mohamedasharafvpp@gmail.com"
-            className="font-display text-3xl font-black uppercase text-[var(--foreground)] hover:text-[var(--accent)] transition-colors"
+            className="group font-display text-3xl font-black uppercase text-[var(--foreground)] hover:text-[var(--accent)] transition-colors"
           >
-            Hire Me
+            <RollText>Hire Me</RollText>
           </a>
         </div>
       </div>
@@ -251,7 +339,7 @@ function ProjectCard({ project, isMobile = false }) {
   return (
     <div
       className={`
-        relative border flex flex-col justify-between overflow-hidden shadow-2xl transition-colors duration-500
+        project-card relative border flex flex-col justify-between overflow-hidden shadow-2xl transition-colors duration-500
         ${isMobile ? "p-6 min-h-[420px] rounded-3xl" : "p-8 md:p-12 h-full"}
         ${
           project.theme === "dark"
@@ -278,13 +366,13 @@ function ProjectCard({ project, isMobile = false }) {
       {/* Header */}
       <div className="flex justify-between items-start z-10 gap-6">
         <div>
-          <span className="font-mono text-xs tracking-widest uppercase mb-3 block text-[var(--accent)]">
+          <span className="project-category font-mono text-xs tracking-widest uppercase mb-3 block text-[var(--accent)]">
             {project.category}
           </span>
 
           <h3
             className={`
-              font-display font-black uppercase leading-[0.95]
+              project-title font-display font-black uppercase leading-[0.95]
               ${isMobile ? "text-2xl" : "text-4xl xl:text-5xl 2xl:text-6xl"}
               ${project.theme === "dark" ? "" : "text-[var(--foreground)]"}
             `}

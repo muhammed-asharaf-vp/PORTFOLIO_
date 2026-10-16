@@ -14,7 +14,7 @@ const jetbrainsMono = JetBrains_Mono({
 // Fontshare (free for commercial use). One font per request: the API only reads the first `f[]`
 const FONTSHARE = [
   "https://api.fontshare.com/v2/css?f[]=panchang@800&display=swap",
-  "https://api.fontshare.com/v2/css?f[]=general-sans@300,400,500,600,700&display=swap",
+  "https://api.fontshare.com/v2/css?f[]=general-sans@300,400,700&display=swap",
 ];
 
 // ✅ SEO + Favicon Config

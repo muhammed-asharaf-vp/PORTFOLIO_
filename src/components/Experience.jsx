@@ -1,11 +1,10 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
 import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
-
-gsap.registerPlugin(ScrollTrigger);
+import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
+import SplitReveal from "@/components/text/SplitReveal";
+import ScrambleIn from "@/components/text/ScrambleIn";
+import CountUp from "@/components/text/CountUp";
 
 const PROJECTS = [
   {
@@ -152,15 +151,6 @@ export default function Experience() {
             "(max-width: 767px) and (prefers-reduced-motion: no-preference)",
         },
         (ctx) => {
-          gsap.from(".exp-head > *", {
-            y: 40,
-            opacity: 0,
-            duration: 0.8,
-            stagger: 0.08,
-            ease: "power3.out",
-            scrollTrigger: { trigger: container.current, start: "top 75%" },
-          });
-
           if (ctx.conditions.mobile) {
             // Panel, then the whole carousel, slide up once
             gsap.from(".exp-panel, .exp-carousel", {
@@ -229,17 +219,32 @@ export default function Experience() {
         <div>
           <p className="text-[11px] md:text-sm font-mono text-[var(--accent)] uppercase tracking-[0.3em] mb-3 flex items-center gap-3">
             <span className="w-2 h-2 bg-[var(--accent)] rounded-full animate-pulse" />
-            ( 02 ) — Checkpoint
+            <ScrambleIn>( 02 ) — Checkpoint</ScrambleIn>
           </p>
-          <h2 className="font-display text-[7vw] md:text-5xl lg:text-7xl xl:text-8xl font-black uppercase text-[var(--foreground)] tracking-tighter leading-[0.9]">
+          {/* Letters flip up in 3D */}
+          <SplitReveal
+            as="h2"
+            type="chars"
+            effect="flip"
+            stagger={0.05}
+            duration={1.1}
+            className="font-display text-[7vw] md:text-5xl lg:text-7xl xl:text-8xl font-black uppercase text-[var(--foreground)] tracking-tighter leading-[0.9]"
+          >
             Experience
             <span className="text-[var(--accent)]">.</span>
-          </h2>
+          </SplitReveal>
         </div>
-        <p className="max-w-sm text-sm md:text-base opacity-60 leading-relaxed md:text-right">
+        <SplitReveal
+          as="p"
+          type="words"
+          effect="blur"
+          stagger={0.03}
+          duration={0.8}
+          className="max-w-sm text-sm md:text-base opacity-60 leading-relaxed md:text-right"
+        >
           Products I&apos;ve built and shipped — from real-time SaaS to
           e-commerce and lead generation.
-        </p>
+        </SplitReveal>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12">
@@ -265,10 +270,12 @@ export default function Experience() {
                   2026 — Present
                 </span>
                 <h3 className="font-display text-3xl lg:text-3xl xl:text-4xl font-black uppercase text-[var(--foreground)] leading-[0.95] tracking-tight">
-                  Toruss
-                  <span className="block text-xs md:text-xl font-mono font-normal tracking-[0.25em] opacity-50 mt-2">
+                  <SplitReveal as="span" type="chars" className="block">
+                    Toruss
+                  </SplitReveal>
+                  <ScrambleIn className="block text-xs md:text-xl font-mono font-normal tracking-[0.25em] opacity-50 mt-2">
                     Creative Agency
-                  </span>
+                  </ScrambleIn>
                 </h3>
               </div>
 
@@ -277,15 +284,23 @@ export default function Experience() {
                 Full Stack Developer
               </p>
 
-              <p className="mt-3 lg:mt-4 text-sm md:text-base opacity-60 leading-relaxed max-w-md">
+              <SplitReveal
+                as="p"
+                type="lines"
+                className="mt-3 lg:mt-4 text-sm md:text-base opacity-60 leading-relaxed max-w-md"
+              >
                 Engineering the future of web interfaces. Transforming raw
                 designs into pixel-perfect, interactive, and scalable React
                 applications within a high-velocity Agile environment.
-              </p>
+              </SplitReveal>
 
               <dl className="mt-6 lg:mt-8 grid grid-cols-2 gap-3 max-w-sm">
-                <Stat value={pad(PROJECTS.length)}>Projects shipped</Stat>
-                <Stat value={`${TECH_COUNT}+`}>Technologies</Stat>
+                <Stat value={PROJECTS.length} pad={2}>
+                  Projects shipped
+                </Stat>
+                <Stat value={TECH_COUNT} suffix="+">
+                  Technologies
+                </Stat>
               </dl>
             </div>
           </div>
@@ -294,9 +309,12 @@ export default function Experience() {
         {/* ---------------- PROJECTS (swipe carousel on mobile, bento grid on desktop) ---------------- */}
         <div className="exp-carousel lg:col-span-8 min-w-0">
           <div className="flex items-center justify-between mb-5 md:mb-6">
-            <p className="font-mono text-xs uppercase tracking-widest opacity-40">
+            <ScrambleIn
+              as="p"
+              className="font-mono text-xs uppercase tracking-widest opacity-40"
+            >
               {"// Deployed Modules"}
-            </p>
+            </ScrambleIn>
             <p className="md:hidden font-mono text-[10px] uppercase tracking-widest opacity-50">
               Swipe →
             </p>
@@ -345,7 +363,11 @@ export default function Experience() {
                       )}
                     </div>
 
-                    <h4
+                    <SplitReveal
+                      as="h4"
+                      type="words"
+                      stagger={0.08}
+                      start="top 92%"
                       className={`font-display font-black uppercase leading-[1] tracking-tight text-[var(--foreground)] group-hover:text-[var(--accent)] transition-colors duration-300 ${
                         featured
                           ? "text-2xl sm:text-3xl lg:text-4xl"
@@ -353,7 +375,7 @@ export default function Experience() {
                       }`}
                     >
                       {project.title}
-                    </h4>
+                    </SplitReveal>
 
                     <p
                       className={`mt-4 text-sm sm:text-base opacity-60 leading-relaxed ${
@@ -456,12 +478,12 @@ function CarouselButton({ label, disabled, onClick, children }) {
   );
 }
 
-function Stat({ value, children }) {
+function Stat({ value, pad = 0, suffix = "", children }) {
   return (
     <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--background)]/40 lg:bg-[var(--card-bg)] px-4 py-3">
       <dt className="sr-only">{children}</dt>
       <dd className="font-display text-3xl font-black text-[var(--accent)] leading-none">
-        {value}
+        <CountUp value={value} pad={pad} suffix={suffix} />
       </dd>
       <dd className="mt-1 font-mono text-[10px] uppercase tracking-widest opacity-50">
         {children}

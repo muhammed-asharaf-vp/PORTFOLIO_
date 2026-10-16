@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffectEvent, useLayoutEffect, useRef, useState } from "react";
-import gsap from "gsap";
+import { gsap, prefersReducedMotion } from "@/lib/gsap";
 
 const STORAGE_KEY = "preloader_done";
 
@@ -42,9 +42,7 @@ export default function Preloader({ onFinish }) {
   const aGlowRef = useRef(null);
 
   useLayoutEffect(() => {
-    const reducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
+    const reducedMotion = prefersReducedMotion();
 
     // Already seen this session (or reduced motion): skip before first paint
     if (alreadyPlayed() || reducedMotion) {

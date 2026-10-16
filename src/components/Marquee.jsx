@@ -1,10 +1,6 @@
 "use client";
 import { useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
-
-gsap.registerPlugin(ScrollTrigger);
+import { gsap, prefersReducedMotion, ScrollTrigger, useGSAP } from "@/lib/gsap";
 
 const ITEMS = [
   { text: "Building Scalable UI", type: "solid" },
@@ -25,7 +21,7 @@ export default function Marquee() {
       const content = textRef.current;
       if (!content) return;
 
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      if (prefersReducedMotion()) return;
 
       //  Slower Base Animation — xPercent keeps the loop seamless after resizes
       const tween = gsap.fromTo(
