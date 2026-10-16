@@ -93,11 +93,13 @@ export default function Hero({ ready }) {
           </span>
         </h1>
 
-        <ul className="mt-10 md:mt-12 flex flex-wrap justify-center md:justify-start gap-2 md:gap-3">
+        {/* Equal-width grid on small screens (3×3, then 5+4) so no chip sits alone;
+            one left-aligned row on desktop */}
+        <ul className="mt-10 md:mt-12 grid grid-cols-3 gap-2 md:w-fit md:grid-cols-5 md:gap-2.5 lg:flex lg:flex-wrap lg:gap-3">
           {SKILLS.map((tech) => (
             <li
               key={tech}
-              className="hero-pill px-4 py-2 md:px-6 md:py-3 border border-[var(--border-color)] rounded-full text-[11px] md:text-sm font-bold uppercase opacity-90 md:opacity-100 md:hover:text-black md:hover:bg-[var(--accent)] md:hover:border-[var(--accent)] transition-colors cursor-default"
+              className="hero-pill text-center whitespace-nowrap px-2 py-2.5 md:px-4 xl:px-5 border border-[var(--border-color)] rounded-full font-mono text-[11px] xl:text-xs uppercase tracking-wider md:hover:text-[var(--background)] md:hover:bg-[var(--accent)] md:hover:border-[var(--accent)] transition-colors cursor-default"
             >
               {tech}
             </li>

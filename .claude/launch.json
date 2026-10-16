@@ -6,6 +6,20 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "start", "--", "-p", "3123"],
       "port": 3123
+    },
+    {
+      "name": "font-preview",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "4321",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "C:/Users/gk21/AppData/Local/Temp/claude/D--Bridgeon-PORTFOLIO-/b4fba834-26ef-4745-abf6-72fbf4fa0bbc/scratchpad"
+      ],
+      "port": 4321
     }
   ]
 }
