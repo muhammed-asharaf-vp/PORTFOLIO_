@@ -90,10 +90,10 @@ export default function Navbar({ ready = true }) {
           className="cursor-dot-zone group relative h-6 overflow-hidden flex flex-col items-start justify-start cursor-pointer mr-auto"
         >
           <div className="flex flex-col transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:-translate-y-1/2">
-            <span className="h-6 flex items-center font-black tracking-tighter uppercase text-base md:text-lg leading-none">
+            <span className="h-6 flex items-center font-display font-black tracking-tighter uppercase text-sm md:text-base leading-none">
               ASHARAF<span className="text-[var(--accent)]">.</span>
             </span>
-            <span className="h-6 flex items-center font-black tracking-tighter uppercase text-base md:text-lg leading-none text-[var(--accent)]">
+            <span className="h-6 flex items-center font-display font-black tracking-tighter uppercase text-sm md:text-base leading-none text-[var(--accent)]">
               ASHARAF<span className="text-[var(--foreground)]">.</span>
             </span>
           </div>

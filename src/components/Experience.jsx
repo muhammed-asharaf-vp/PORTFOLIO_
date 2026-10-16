@@ -1,8 +1,9 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -86,9 +87,13 @@ const TECH_COUNT = new Set(PROJECTS.flatMap((p) => p.tags)).size;
 // Descriptions longer than this get a "Read more" toggle
 const CLAMP_AFTER = 220;
 
+const pad = (n) => String(n).padStart(2, "0");
+
 export default function Experience() {
   const container = useRef(null);
+  const listRef = useRef(null);
   const [expanded, setExpanded] = useState(() => new Set());
+  const [active, setActive] = useState(0);
 
   const toggle = (title) =>
     setExpanded((prev) => {
@@ -98,51 +103,109 @@ export default function Experience() {
       return next;
     });
 
+  // Mobile carousel: track which card is in view
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+
+    // A few cheap reads per scroll event; setActive skips re-renders when unchanged
+    const onScroll = () => {
+      const cards = list.children;
+      if (cards.length < 2) return;
+      const step = cards[1].offsetLeft - cards[0].offsetLeft;
+      const atEnd = list.scrollLeft >= list.scrollWidth - list.clientWidth - 4;
+      const index = atEnd
+        ? cards.length - 1
+        : Math.round(list.scrollLeft / step);
+      setActive(Math.max(0, Math.min(cards.length - 1, index)));
+    };
+
+    // Only fires while the mobile carousel is scrollable (desktop grid doesn't scroll)
+    list.addEventListener("scroll", onScroll, { passive: true });
+    return () => list.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const goTo = (index) => {
+    const list = listRef.current;
+    const target =
+      list?.children[Math.max(0, Math.min(index, PROJECTS.length - 1))];
+    if (!target) return;
+    // scroll the carousel only — never the page
+    list.scrollTo({
+      left:
+        target.offsetLeft -
+        list.offsetLeft -
+        parseFloat(getComputedStyle(list).paddingLeft),
+      behavior: "smooth",
+    });
+  };
+
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
 
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
-        // Progress line fills as you scroll through the section
-        gsap.fromTo(
-          ".exp-progress",
-          { scaleY: 0 },
-          {
-            scaleY: 1,
-            ease: "none",
-            scrollTrigger: {
-              trigger: container.current,
-              start: "top 60%",
-              end: "bottom 80%",
-              scrub: 0.6,
-            },
-          },
-        );
+      mm.add(
+        {
+          desktop:
+            "(min-width: 768px) and (prefers-reduced-motion: no-preference)",
+          mobile:
+            "(max-width: 767px) and (prefers-reduced-motion: no-preference)",
+        },
+        (ctx) => {
+          gsap.from(".exp-head > *", {
+            y: 40,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.08,
+            ease: "power3.out",
+            scrollTrigger: { trigger: container.current, start: "top 75%" },
+          });
 
-        gsap.from(".exp-head > *", {
-          y: 40,
-          opacity: 0,
-          duration: 0.8,
-          stagger: 0.08,
-          ease: "power3.out",
-          scrollTrigger: { trigger: container.current, start: "top 75%" },
-        });
-
-        // Cards rise in, staggered per batch as they enter the viewport
-        gsap.set(".exp-card", { y: 60, opacity: 0 });
-        ScrollTrigger.batch(".exp-card", {
-          start: "top 88%",
-          onEnter: (batch) =>
-            gsap.to(batch, {
-              y: 0,
-              opacity: 1,
-              duration: 0.8,
-              stagger: 0.1,
+          if (ctx.conditions.mobile) {
+            // Panel, then the whole carousel, slide up once
+            gsap.from(".exp-panel, .exp-carousel", {
+              y: 50,
+              opacity: 0,
+              duration: 0.9,
+              stagger: 0.15,
               ease: "power3.out",
-              overwrite: true,
-            }),
-        });
-      });
+              scrollTrigger: { trigger: ".exp-panel", start: "top 85%" },
+            });
+            return;
+          }
+
+          // Progress line fills as you scroll through the section
+          gsap.fromTo(
+            ".exp-progress",
+            { scaleY: 0 },
+            {
+              scaleY: 1,
+              ease: "none",
+              scrollTrigger: {
+                trigger: container.current,
+                start: "top 60%",
+                end: "bottom 80%",
+                scrub: 0.6,
+              },
+            },
+          );
+
+          // Cards rise in, staggered per batch as they enter the viewport
+          gsap.set(".exp-card", { y: 60, opacity: 0 });
+          ScrollTrigger.batch(".exp-card", {
+            start: "top 88%",
+            onEnter: (batch) =>
+              gsap.to(batch, {
+                y: 0,
+                opacity: 1,
+                duration: 0.8,
+                stagger: 0.1,
+                ease: "power3.out",
+                overwrite: true,
+              }),
+          });
+        },
+      );
     },
     { scope: container },
   );
@@ -162,14 +225,15 @@ export default function Experience() {
       className="relative py-20 md:py-32 px-5 sm:px-8 md:px-12 max-w-[1800px] mx-auto border-b border-[var(--border-color)] overflow-clip scroll-mt-[120px]"
     >
       {/* ---------------- HEADER ---------------- */}
-      <div className="exp-head flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14 md:mb-20">
+      <div className="exp-head flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6 mb-10 md:mb-20">
         <div>
-          <p className="text-xs md:text-sm font-mono text-[var(--accent)] uppercase tracking-[0.3em] mb-3 flex items-center gap-3">
+          <p className="text-[11px] md:text-sm font-mono text-[var(--accent)] uppercase tracking-[0.3em] mb-3 flex items-center gap-3">
             <span className="w-2 h-2 bg-[var(--accent)] rounded-full animate-pulse" />
             ( 02 ) — Checkpoint
           </p>
-          <h2 className="text-5xl sm:text-6xl md:text-8xl font-black uppercase text-[var(--foreground)] tracking-tighter leading-[0.9]">
+          <h2 className="font-display text-[7vw] md:text-5xl lg:text-7xl xl:text-8xl font-black uppercase text-[var(--foreground)] tracking-tighter leading-[0.9]">
             Experience
+            <span className="text-[var(--accent)]">.</span>
           </h2>
         </div>
         <p className="max-w-sm text-sm md:text-base opacity-60 leading-relaxed md:text-right">
@@ -179,53 +243,69 @@ export default function Experience() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12">
-        {/* ---------------- COMPANY (sticky on desktop) ---------------- */}
+        {/* ---------------- COMPANY (glass card on mobile, sticky rail on desktop) ---------------- */}
         <aside className="lg:col-span-4">
-          <div className="lg:sticky lg:top-32 relative pl-6 md:pl-8">
-            {/* Scroll progress rail */}
-            <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-[var(--border-color)]">
+          <div className="exp-panel relative overflow-hidden rounded-3xl border border-[var(--border-color)] bg-[var(--card-bg)] p-6 lg:overflow-visible lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:pl-8 lg:sticky lg:top-32">
+            {/* Mobile glow */}
+            <div
+              aria-hidden="true"
+              className="lg:hidden pointer-events-none absolute -top-24 -right-24 w-64 h-64 rounded-full blur-3xl opacity-25"
+              style={{ background: "var(--accent)" }}
+            />
+
+            {/* Scroll progress rail (desktop) */}
+            <div className="hidden lg:block absolute left-0 top-0 bottom-0 w-[2px] bg-[var(--border-color)]">
               <div className="exp-progress absolute inset-0 origin-top bg-[var(--accent)] shadow-[0_0_16px_var(--accent)]" />
             </div>
 
-            <div className="flex items-center gap-3 mb-6">
-              <span className="font-mono text-[10px] md:text-xs px-3 py-1 rounded-full border border-[var(--accent)] text-[var(--accent)] uppercase tracking-widest">
-                2026 — Present
-              </span>
+            <div className="relative">
+              {/* Badge above the title (Panchang is too wide to share a row on phones) */}
+              <div className="flex flex-col items-start gap-4 lg:gap-6">
+                <span className="shrink-0 font-mono text-[10px] md:text-xs px-3 py-1 rounded-full border border-[var(--accent)] text-[var(--accent)] uppercase tracking-widest">
+                  2026 — Present
+                </span>
+                <h3 className="font-display text-3xl lg:text-3xl xl:text-4xl font-black uppercase text-[var(--foreground)] leading-[0.95] tracking-tight">
+                  Toruss
+                  <span className="block text-xs md:text-xl font-mono font-normal tracking-[0.25em] opacity-50 mt-2">
+                    Creative Agency
+                  </span>
+                </h3>
+              </div>
+
+              <p className="mt-5 lg:mt-6 inline-flex items-center gap-2 text-base md:text-2xl font-light text-[var(--foreground)]">
+                <span className="lg:hidden w-6 h-[1px] bg-[var(--accent)]" />
+                Full Stack Developer
+              </p>
+
+              <p className="mt-3 lg:mt-4 text-sm md:text-base opacity-60 leading-relaxed max-w-md">
+                Engineering the future of web interfaces. Transforming raw
+                designs into pixel-perfect, interactive, and scalable React
+                applications within a high-velocity Agile environment.
+              </p>
+
+              <dl className="mt-6 lg:mt-8 grid grid-cols-2 gap-3 max-w-sm">
+                <Stat value={pad(PROJECTS.length)}>Projects shipped</Stat>
+                <Stat value={`${TECH_COUNT}+`}>Technologies</Stat>
+              </dl>
             </div>
-
-            <h3 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase text-[var(--foreground)] leading-[0.95] tracking-tight">
-              Toruss
-              <span className="block text-lg md:text-xl font-mono font-normal tracking-widest opacity-50 mt-2">
-                Creative Agency
-              </span>
-            </h3>
-
-            <p className="mt-6 text-xl md:text-2xl font-light text-[var(--foreground)]">
-              Full Stack Developer
-            </p>
-
-            <p className="mt-4 text-sm md:text-base opacity-60 leading-relaxed max-w-md">
-              Engineering the future of web interfaces. Transforming raw designs
-              into pixel-perfect, interactive, and scalable React applications
-              within a high-velocity Agile environment.
-            </p>
-
-            <dl className="mt-8 grid grid-cols-2 gap-3 max-w-sm">
-              <Stat value={String(PROJECTS.length).padStart(2, "0")}>
-                Projects shipped
-              </Stat>
-              <Stat value={`${TECH_COUNT}+`}>Technologies</Stat>
-            </dl>
           </div>
         </aside>
 
-        {/* ---------------- PROJECTS (bento grid) ---------------- */}
-        <div className="lg:col-span-8">
-          <p className="font-mono text-xs uppercase tracking-widest opacity-40 mb-6">
-            {"// Deployed Modules"}
-          </p>
+        {/* ---------------- PROJECTS (swipe carousel on mobile, bento grid on desktop) ---------------- */}
+        <div className="exp-carousel lg:col-span-8 min-w-0">
+          <div className="flex items-center justify-between mb-5 md:mb-6">
+            <p className="font-mono text-xs uppercase tracking-widest opacity-40">
+              {"// Deployed Modules"}
+            </p>
+            <p className="md:hidden font-mono text-[10px] uppercase tracking-widest opacity-50">
+              Swipe →
+            </p>
+          </div>
 
-          <ol className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+          <ol
+            ref={listRef}
+            className="flex gap-4 overflow-x-auto snap-x snap-mandatory -mx-5 px-5 scroll-px-5 sm:-mx-8 sm:px-8 sm:scroll-px-8 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-0 md:px-0 md:pb-0 md:overflow-visible md:grid md:grid-cols-2 md:gap-5"
+          >
             {PROJECTS.map((project, i) => {
               const featured = i === 0;
               const isOpen = expanded.has(project.title);
@@ -235,9 +315,9 @@ export default function Experience() {
                 <li
                   key={project.title}
                   onMouseMove={handleMouseMove}
-                  className={`exp-card group relative rounded-3xl border border-[var(--border-color)] bg-[var(--card-bg)] p-6 sm:p-7 md:p-8 overflow-hidden transition-colors duration-500 hover:border-[var(--accent)] flex flex-col ${
+                  className={`exp-card group relative shrink-0 w-[86%] sm:w-[62%] md:w-auto snap-start rounded-3xl border border-[var(--border-color)] bg-[var(--card-bg)] p-6 sm:p-7 md:p-8 overflow-hidden transition-colors duration-500 hover:border-[var(--accent)] flex flex-col ${
                     featured ? "md:col-span-2" : ""
-                  }`}
+                  } ${active === i ? "max-md:border-[var(--accent)]/60" : ""}`}
                 >
                   {/* Spotlight */}
                   <div
@@ -253,7 +333,7 @@ export default function Experience() {
                     {/* Meta row */}
                     <div className="flex flex-wrap items-center gap-3 mb-5">
                       <span className="font-mono text-xs w-9 h-9 grid place-items-center border border-[var(--accent)] text-[var(--accent)] rounded-xl">
-                        {String(i + 1).padStart(2, "0")}
+                        {pad(i + 1)}
                       </span>
                       <span className="font-mono text-[10px] md:text-xs uppercase tracking-widest opacity-60">
                         {project.kind}
@@ -266,10 +346,10 @@ export default function Experience() {
                     </div>
 
                     <h4
-                      className={`font-black uppercase leading-[0.95] tracking-tight text-[var(--foreground)] group-hover:text-[var(--accent)] transition-colors duration-300 ${
+                      className={`font-display font-black uppercase leading-[1] tracking-tight text-[var(--foreground)] group-hover:text-[var(--accent)] transition-colors duration-300 ${
                         featured
-                          ? "text-3xl sm:text-4xl md:text-5xl"
-                          : "text-2xl sm:text-3xl"
+                          ? "text-2xl sm:text-3xl lg:text-4xl"
+                          : "text-lg sm:text-xl xl:text-2xl"
                       }`}
                     >
                       {project.title}
@@ -279,7 +359,7 @@ export default function Experience() {
                       className={`mt-4 text-sm sm:text-base opacity-60 leading-relaxed ${
                         clampable && !isOpen
                           ? featured
-                            ? "line-clamp-3"
+                            ? "line-clamp-4 md:line-clamp-3"
                             : "line-clamp-4"
                           : ""
                       }`}
@@ -298,7 +378,7 @@ export default function Experience() {
                       </button>
                     )}
 
-                    {/* Tags pinned to the bottom so cards in a row line up */}
+                    {/* Tags pinned to the bottom so cards line up */}
                     <ul className="mt-auto pt-6 flex flex-wrap gap-2">
                       {project.tags.map((t) => (
                         <li
@@ -314,17 +394,73 @@ export default function Experience() {
               );
             })}
           </ol>
+
+          {/* Mobile carousel controls */}
+          <div className="md:hidden mt-5 flex items-center gap-4">
+            <span className="font-mono text-xs tabular-nums">
+              <span className="text-[var(--accent)]">{pad(active + 1)}</span>
+              <span className="opacity-40"> / {pad(PROJECTS.length)}</span>
+            </span>
+
+            <div className="flex-1 flex gap-1.5">
+              {PROJECTS.map((p, i) => (
+                <button
+                  key={p.title}
+                  type="button"
+                  onClick={() => goTo(i)}
+                  aria-label={`Show ${p.title}`}
+                  aria-current={active === i}
+                  className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
+                    i <= active
+                      ? "bg-[var(--accent)]"
+                      : "bg-[var(--border-color)]"
+                  }`}
+                />
+              ))}
+            </div>
+
+            <div className="flex gap-2">
+              <CarouselButton
+                label="Previous project"
+                disabled={active === 0}
+                onClick={() => goTo(active - 1)}
+              >
+                <FiArrowLeft />
+              </CarouselButton>
+              <CarouselButton
+                label="Next project"
+                disabled={active === PROJECTS.length - 1}
+                onClick={() => goTo(active + 1)}
+              >
+                <FiArrowRight />
+              </CarouselButton>
+            </div>
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
+function CarouselButton({ label, disabled, onClick, children }) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      disabled={disabled}
+      onClick={onClick}
+      className="w-10 h-10 grid place-items-center rounded-full border border-[var(--border-color)] text-[var(--foreground)] transition active:scale-90 disabled:opacity-30 enabled:hover:border-[var(--accent)] enabled:hover:text-[var(--accent)]"
+    >
+      <span aria-hidden="true">{children}</span>
+    </button>
+  );
+}
+
 function Stat({ value, children }) {
   return (
-    <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--card-bg)] px-4 py-3">
+    <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--background)]/40 lg:bg-[var(--card-bg)] px-4 py-3">
       <dt className="sr-only">{children}</dt>
-      <dd className="text-3xl font-black text-[var(--accent)] leading-none">
+      <dd className="font-display text-3xl font-black text-[var(--accent)] leading-none">
         {value}
       </dd>
       <dd className="mt-1 font-mono text-[10px] uppercase tracking-widest opacity-50">

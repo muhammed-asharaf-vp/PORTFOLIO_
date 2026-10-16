@@ -303,7 +303,7 @@ export default function TypingSpeedGame() {
       <div ref={containerRef} className="max-w-5xl mx-auto relative z-10">
         {/* Title */}
         <div className="text-center mb-10">
-          <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter">
+          <h2 className="font-display text-2xl sm:text-3xl md:text-5xl font-black uppercase tracking-tighter">
             Typing <span className="text-[var(--accent)]">Speed</span>
           </h2>
           <p className="mt-3 text-sm md:text-base opacity-70">

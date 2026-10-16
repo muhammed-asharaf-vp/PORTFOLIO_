@@ -26,25 +26,25 @@ const PROJECTS = [
     link: "https://orbit.toruss.agency/",
   },
   {
-  id: "02",
-  title: "The Spanish Alchemist",
-  category: "D2C Skincare E-commerce Store",
-  pitch:
-    "Conversion-focused Shopify storefront for a Spanish skincare brand, with routine bundles, shop-by-skin-type discovery, quick add-to-cart, customer reviews, and a redesigned product listing experience.",
-  stack: ["Shopify", "Liquid", "JavaScript", "CSS", "Klaviyo"],
-  theme: "dark",
-  link: "https://thespanishalchemist.com/",
-},
-{
-  id: "03",
-  title: "Oceanus Grandeur",
-  category: "Real Estate Lead Generation Platform",
-  pitch:
-    "High-converting landing site for Palakkad's largest residential township, with apartment configurators, a refundable booking offer, live project updates, and site-visit forms that capture leads straight into a Supabase backend, tracked across Google Ads and Meta.",
-  stack: ["HTML", "CSS", "JavaScript", "Supabase", "PostgreSQL"],
-  theme: "light",
-  link: "https://oceanusgrandeurpalakkad.com/",
-},
+    id: "02",
+    title: "The Spanish Alchemist",
+    category: "D2C Skincare E-commerce Store",
+    pitch:
+      "Conversion-focused Shopify storefront for a Spanish skincare brand, with routine bundles, shop-by-skin-type discovery, quick add-to-cart, customer reviews, and a redesigned product listing experience.",
+    stack: ["Shopify", "Liquid", "JavaScript", "CSS", "Klaviyo"],
+    theme: "dark",
+    link: "https://thespanishalchemist.com/",
+  },
+  {
+    id: "03",
+    title: "Oceanus Grandeur",
+    category: "Real Estate Lead Generation Platform",
+    pitch:
+      "High-converting landing site for Palakkad's largest residential township, with apartment configurators, a refundable booking offer, live project updates, and site-visit forms that capture leads straight into a Supabase backend, tracked across Google Ads and Meta.",
+    stack: ["HTML", "CSS", "JavaScript", "Supabase", "PostgreSQL"],
+    theme: "light",
+    link: "https://oceanusgrandeurpalakkad.com/",
+  },
   {
     id: "04",
     title: "Eram Education",
@@ -163,7 +163,7 @@ export default function Projects() {
               </h2>
             </div>
 
-            <p className="text-9xl font-black text-[var(--foreground)] leading-[0.8] tracking-tighter uppercase">
+            <p className="font-display text-[6.5vw] font-black text-[var(--foreground)] leading-[0.85] tracking-tighter uppercase">
               <br />
               <span className="text-transparent text-stroke-foreground">
                 Work
@@ -195,7 +195,7 @@ export default function Projects() {
 
             <a
               href="mailto:mohamedasharafvpp@gmail.com"
-              className=" cursor-dot-zone group relative inline-block text-7xl md:text-9xl font-black uppercase tracking-tight text-[var(--foreground)] transition-all duration-300 ease-out hover:text-[var(--accent)] hover:-translate-y-1 "
+              className=" cursor-dot-zone group relative inline-block font-display text-[4.5vw] font-black uppercase tracking-tight text-[var(--foreground)] transition-all duration-300 ease-out hover:text-[var(--accent)] hover:-translate-y-1 "
             >
               Hire Me
               <span className="absolute left-0 -bottom-3 h-[4px] w-0 bg-[var(--accent)] rounded-full transition-all duration-300 ease-out group-hover:w-full" />
@@ -211,7 +211,7 @@ export default function Projects() {
           <p className="font-mono text-xs uppercase tracking-widest text-[var(--accent)] mb-3">
             ( Projects )
           </p>
-          <h2 className="text-4xl sm:text-5xl font-black uppercase tracking-tight text-[var(--foreground)]">
+          <h2 className="font-display text-3xl sm:text-4xl font-black uppercase tracking-tight text-[var(--foreground)]">
             Code in Action{" "}
           </h2>
           <p className="mt-4 text-sm sm:text-base opacity-70 max-w-xl leading-relaxed">
@@ -236,7 +236,7 @@ export default function Projects() {
           </p>
           <a
             href="mailto:mohamedasharafvpp@gmail.com"
-            className="text-4xl font-black uppercase text-[var(--foreground)] hover:text-[var(--accent)] transition-colors"
+            className="font-display text-3xl font-black uppercase text-[var(--foreground)] hover:text-[var(--accent)] transition-colors"
           >
             Hire Me
           </a>
@@ -263,7 +263,7 @@ function ProjectCard({ project, isMobile = false }) {
       {/* Background Index */}
       <span
         className={`
-          absolute -bottom-8 -right-6 font-black leading-none select-none pointer-events-none transition-opacity
+          absolute -bottom-8 -right-6 font-display font-black leading-none select-none pointer-events-none transition-opacity
           ${isMobile ? "text-[22vh]" : "text-[40vh]"}
           ${
             project.theme === "dark"
@@ -284,8 +284,8 @@ function ProjectCard({ project, isMobile = false }) {
 
           <h3
             className={`
-              font-black uppercase leading-[0.9]
-              ${isMobile ? "text-4xl" : "text-5xl md:text-7xl"}
+              font-display font-black uppercase leading-[0.95]
+              ${isMobile ? "text-2xl" : "text-4xl xl:text-5xl 2xl:text-6xl"}
               ${project.theme === "dark" ? "" : "text-[var(--foreground)]"}
             `}
           >

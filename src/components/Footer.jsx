@@ -16,13 +16,14 @@ export default function Footer() {
           href="mailto:mohamedasharafvpp@gmail.com"
           className="cursor-dot-zone group relative inline-flex items-center gap-4"
         >
-          <span className="text-[10vw] font-black uppercase leading-[0.8] tracking-tighter text-[var(--foreground)] transition-colors duration-300 group-hover:text-[var(--accent)]">
+          <span className="font-display text-[7vw] font-black uppercase leading-[0.9] tracking-tighter text-[var(--foreground)] transition-colors duration-300 group-hover:text-[var(--accent)]">
             Let&apos;s Talk
           </span>
 
           <FiArrowUpRight
             aria-hidden="true"
-            className=" text-[var(--accent)] text-6xl transition-all duration-300 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:-translate-y-2 group-hover:translate-x-2 "/>
+            className=" text-[var(--accent)] text-6xl transition-all duration-300 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:-translate-y-2 group-hover:translate-x-2 "
+          />
         </a>
 
         <p className="mt-6 text-base opacity-60 max-w-xl font-light leading-relaxed">
@@ -32,7 +33,7 @@ export default function Footer() {
 
       {/* ---------------- MOBILE UI ---------------- */}
       <div className="block md:hidden w-full max-w-md">
-        <h2 className="text-4xl font-black uppercase tracking-tight text-[var(--foreground)] leading-[1]">
+        <h2 className="font-display text-3xl font-black uppercase tracking-tight text-[var(--foreground)] leading-[1]">
           Let&apos;s Talk
         </h2>
 
@@ -79,7 +80,8 @@ function SocialLink({ href, label }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className=" cursor-dot-zone relative group hover:text-[var(--accent)] transition-colors px-5 py-3 rounded-full border border-[var(--border-color)] md:border-none md:px-0 md:py-0 " >
+      className=" cursor-dot-zone relative group hover:text-[var(--accent)] transition-colors px-5 py-3 rounded-full border border-[var(--border-color)] md:border-none md:px-0 md:py-0 "
+    >
       {label}
 
       {/* underline only for desktop */}

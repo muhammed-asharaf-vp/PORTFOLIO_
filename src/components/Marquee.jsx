@@ -100,13 +100,13 @@ export default function Marquee() {
             {/* Text */}
             {item.type === "outline" ? (
               <span
-                className="text-6xl md:text-8xl font-black uppercase text-transparent tracking-tighter transition-colors duration-300 hover:text-[var(--accent)]"
+                className="font-display text-5xl md:text-7xl font-black uppercase text-transparent tracking-tighter transition-colors duration-300 hover:text-[var(--accent)]"
                 style={{ WebkitTextStroke: "1px var(--background)" }}
               >
                 {item.text}
               </span>
             ) : (
-              <span className="text-6xl md:text-8xl font-black uppercase text-[var(--background)] tracking-tighter">
+              <span className="font-display text-5xl md:text-7xl font-black uppercase text-[var(--background)] tracking-tighter">
                 {item.text}
               </span>
             )}

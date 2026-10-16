@@ -1,7 +1,21 @@
+import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
+
+// Self-hosted at build time by next/font
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains",
+  display: "swap",
+});
+
+// Fontshare (free for commercial use). One font per request: the API only reads the first `f[]`
+const FONTSHARE = [
+  "https://api.fontshare.com/v2/css?f[]=panchang@800&display=swap",
+  "https://api.fontshare.com/v2/css?f[]=general-sans@300,400,500,600,700&display=swap",
+];
 
 // ✅ SEO + Favicon Config
 export const metadata = {
@@ -80,7 +94,18 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={jetbrainsMono.variable} suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://api.fontshare.com" />
+        <link
+          rel="preconnect"
+          href="https://cdn.fontshare.com"
+          crossOrigin="anonymous"
+        />
+        {FONTSHARE.map((href) => (
+          <link key={href} rel="stylesheet" href={href} />
+        ))}
+      </head>
       <body className="antialiased">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <SmoothScroll>{children}</SmoothScroll>

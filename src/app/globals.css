@@ -10,7 +10,10 @@
   --color-accent: var(--accent);
   --color-card: var(--card-bg);
   --color-border: var(--border-color);
-  --font-sans: system-ui, -apple-system, sans-serif;
+  /* Body: General Sans · Headings: Panchang · Labels: JetBrains Mono */
+  --font-sans: "General Sans", system-ui, -apple-system, sans-serif;
+  --font-display: "Panchang", "General Sans", system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SFMono-Regular", monospace;
   --animate-spin-slow: spin 8s linear infinite;
 }
 

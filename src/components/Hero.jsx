@@ -69,12 +69,12 @@ export default function Hero({ ready }) {
     >
       <div className="w-full max-w-6xl text-center md:text-left">
         <p className="text-[var(--accent)] font-mono mb-4 md:mb-5 tracking-widest uppercase text-xs md:text-sm">
-         Full Stack Developer
+          Full Stack Developer
         </p>
 
         <h1
           aria-label="Mohamed Asharaf"
-          className="text-[15vw] leading-[0.95] tracking-tight md:text-[12vw] md:leading-[0.82] md:tracking-tighter font-black uppercase text-[var(--foreground)]"
+          className="font-display text-[9.5vw] leading-[1] tracking-tight md:text-[min(8vw,7rem)] md:leading-[0.92] md:tracking-tighter font-black uppercase text-[var(--foreground)]"
         >
           <span
             aria-hidden="true"
