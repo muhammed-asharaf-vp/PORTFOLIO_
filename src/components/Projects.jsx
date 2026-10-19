@@ -1,7 +1,13 @@
 "use client";
 import { useRef } from "react";
 import { FiArrowUpRight } from "react-icons/fi";
-import { gsap, SCRAMBLE_CHARS, SplitText, useGSAP } from "@/lib/gsap";
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "motion/react";
+import { gsap, SCRAMBLE_CHARS, SplitText, useGSAP, whenIdle } from "@/lib/gsap";
 import SplitReveal from "@/components/text/SplitReveal";
 import ScrambleIn from "@/components/text/ScrambleIn";
 import RollText from "@/components/text/RollText";
@@ -98,98 +104,126 @@ const PROJECTS = [
 export default function Projects() {
   const container = useRef(null);
   const scrollContainer = useRef(null);
+  const stackRef = useRef(null);
 
+  // Mobile stack: 0 when the list reaches the top, 1 when its end leaves the bottom
+  const { scrollYProgress: stackProgress } = useScroll({
+    target: stackRef,
+    offset: ["start start", "end end"],
+  });
+
+  // Deferred to an idle slot after hydration (see whenIdle in lib/gsap)
   useGSAP(
-    () => {
-      const mm = gsap.matchMedia();
+    (_, contextSafe) =>
+      whenIdle(
+        contextSafe(() => {
+          const mm = gsap.matchMedia();
 
-      // Card title letters rise from masks while the category decodes.
-      // On desktop they're driven by the horizontal scroll (containerAnimation).
-      const revealCards = (cards, triggerFor) => {
-        cards.forEach((card) => {
-          const title = card.querySelector(".project-title");
-          const category = card.querySelector(".project-category");
-          const scrollTrigger = { ...triggerFor(card), once: true };
+          // Card title letters rise from masks while the category decodes.
+          // On desktop they're driven by the horizontal scroll (containerAnimation).
+          // One idle task per card: splitting all 8 titles at once was a single
+          // long frame. `ctx` is the matchMedia context; a task that runs after it
+          // was reverted (breakpoint change / unmount) is skipped.
+          const revealCards = (ctx, contextSafe, cards, triggerFor) => {
+            cards.forEach((card) =>
+              whenIdle(
+                contextSafe(() => {
+                  if (ctx.isReverted) return;
+                  const title = card.querySelector(".project-title");
+                  const category = card.querySelector(".project-category");
+                  const scrollTrigger = { ...triggerFor(card), once: true };
 
-          const split = SplitText.create(title, {
-            type: "words,chars",
-            mask: "chars",
-          });
-          gsap.from(split.chars, {
-            yPercent: 110,
-            rotate: 6,
-            transformOrigin: "0% 100%",
-            duration: 1,
-            stagger: 0.02,
-            ease: "expo.out",
-            scrollTrigger,
-          });
-          gsap.to(category, {
-            duration: 1,
-            ease: "none",
-            scrambleText: {
-              text: category.textContent,
-              chars: SCRAMBLE_CHARS,
-              revealDelay: 0.2,
-              speed: 0.5,
+                  const split = SplitText.create(title, {
+                    type: "words,chars",
+                    mask: "chars",
+                  });
+                  gsap.from(split.chars, {
+                    yPercent: 110,
+                    rotate: 6,
+                    transformOrigin: "0% 100%",
+                    duration: 1,
+                    stagger: 0.02,
+                    ease: "expo.out",
+                    scrollTrigger,
+                  });
+                  gsap.to(category, {
+                    duration: 1,
+                    ease: "none",
+                    scrambleText: {
+                      text: category.textContent,
+                      chars: SCRAMBLE_CHARS,
+                      revealDelay: 0.2,
+                      speed: 0.5,
+                    },
+                    scrollTrigger,
+                  });
+                }),
+              ),
+            );
+          };
+
+          mm.add(
+            {
+              desktop: "(min-width: 1024px)",
+              mobile: "(max-width: 1023px)",
+              motion: "(prefers-reduced-motion: no-preference)",
             },
-            scrollTrigger,
-          });
-        });
-      };
+            (ctx, mmContextSafe) => {
+              const { desktop, motion } = ctx.conditions;
+              const wrap = container.current;
 
-      mm.add(
-        {
-          desktop: "(min-width: 1024px)",
-          mobile: "(max-width: 1023px)",
-          motion: "(prefers-reduced-motion: no-preference)",
-        },
-        (ctx) => {
-          const { desktop, motion } = ctx.conditions;
-          const wrap = container.current;
+              if (!desktop) {
+                if (motion) {
+                  revealCards(
+                    ctx,
+                    mmContextSafe,
+                    wrap.querySelectorAll(
+                      '[data-layout="mobile"] .project-card',
+                    ),
+                    (card) => ({ trigger: card, start: "top 80%" }),
+                  );
+                }
+                return;
+              }
 
-          if (!desktop) {
-            if (motion) {
-              revealCards(
-                wrap.querySelectorAll('[data-layout="mobile"] .project-card'),
-                (card) => ({ trigger: card, start: "top 80%" }),
-              );
-            }
-            return;
-          }
+              const el = scrollContainer.current;
+              if (!el || !wrap) return;
 
-          const el = scrollContainer.current;
-          if (!el || !wrap) return;
+              //  only needed scroll distance — re-measured on every refresh/resize
+              const getDistance = () =>
+                Math.max(0, el.scrollWidth - window.innerWidth);
 
-          //  only needed scroll distance — re-measured on every refresh/resize
-          const getDistance = () =>
-            Math.max(0, el.scrollWidth - window.innerWidth);
+              const tween = gsap.to(el, {
+                x: () => -getDistance(),
+                ease: "none",
+                force3D: true,
+                scrollTrigger: {
+                  trigger: wrap,
+                  start: "top top",
+                  end: () => `+=${getDistance()}`,
+                  scrub: 1,
+                  pin: true,
+                  invalidateOnRefresh: true,
+                  anticipatePin: 1,
+                },
+              });
 
-          const tween = gsap.to(el, {
-            x: () => -getDistance(),
-            ease: "none",
-            force3D: true,
-            scrollTrigger: {
-              trigger: wrap,
-              start: "top top",
-              end: () => `+=${getDistance()}`,
-              scrub: 1,
-              pin: true,
-              invalidateOnRefresh: true,
-              anticipatePin: 1,
+              if (motion) {
+                revealCards(
+                  ctx,
+                  mmContextSafe,
+                  el.querySelectorAll(".project-card"),
+                  (card) => ({
+                    trigger: card,
+                    containerAnimation: tween,
+                    start: "left 85%",
+                  }),
+                );
+              }
             },
-          });
-
-          if (motion) {
-            revealCards(el.querySelectorAll(".project-card"), (card) => ({
-              trigger: card,
-              containerAnimation: tween,
-              start: "left 85%",
-            }));
-          }
-        },
-      );
-    },
+          );
+        }),
+      ),
     { scope: container },
   );
 
@@ -308,12 +342,17 @@ export default function Projects() {
           </SplitReveal>
         </div>
 
-        {/* Mobile Cards */}
-        <div className="flex flex-col gap-8">
-          {PROJECTS.map((project) => (
-            <div key={project.id} className="w-full">
+        {/* Mobile Cards: sticky stack, each one shrinks as the next slides over it */}
+        <div ref={stackRef} className="flex flex-col gap-8">
+          {PROJECTS.map((project, i) => (
+            <StackCard
+              key={project.id}
+              index={i}
+              total={PROJECTS.length}
+              progress={stackProgress}
+            >
               <ProjectCard project={project} isMobile />
-            </div>
+            </StackCard>
           ))}
         </div>
 
@@ -334,7 +373,27 @@ export default function Projects() {
   );
 }
 
-/* ---------------- COMPONENT ---------------- */
+/* ---------------- COMPONENTS ---------------- */
+
+// Sticky wrapper: each card sticks a little lower than the last so the stack's
+// edges peek out, then scales down while the cards after it cover it.
+function StackCard({ index, total, progress, children }) {
+  const reduced = useReducedMotion();
+  const targetScale = 1 - (total - 1 - index) * 0.04;
+  const scale = useTransform(progress, [index / total, 1], [1, targetScale]);
+
+  return (
+    <div className="sticky w-full" style={{ top: `${88 + index * 14}px` }}>
+      <motion.div
+        style={reduced ? undefined : { scale }}
+        className="origin-top will-change-transform"
+      >
+        {children}
+      </motion.div>
+    </div>
+  );
+}
+
 function ProjectCard({ project, isMobile = false }) {
   return (
     <div

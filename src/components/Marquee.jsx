@@ -1,6 +1,12 @@
 "use client";
 import { useRef } from "react";
-import { gsap, prefersReducedMotion, ScrollTrigger, useGSAP } from "@/lib/gsap";
+import {
+  gsap,
+  prefersReducedMotion,
+  ScrollTrigger,
+  useGSAP,
+  whenIdle,
+} from "@/lib/gsap";
 
 const ITEMS = [
   { text: "Building Scalable UI", type: "solid" },
@@ -16,65 +22,68 @@ export default function Marquee() {
   const container = useRef(null);
   const textRef = useRef(null);
 
+  // Deferred to an idle slot after hydration (see whenIdle in lib/gsap)
   useGSAP(
-    () => {
-      const content = textRef.current;
-      if (!content) return;
+    (_, contextSafe) =>
+      whenIdle(
+        contextSafe(() => {
+          const content = textRef.current;
+          if (!content) return;
 
-      if (prefersReducedMotion()) return;
+          if (prefersReducedMotion()) return;
 
-      //  Slower Base Animation — xPercent keeps the loop seamless after resizes
-      const tween = gsap.fromTo(
-        content,
-        { xPercent: 0 },
-        {
-          xPercent: -50,
-          duration: 35, //  slower (increase = more slow)
-          ease: "none",
-          repeat: -1,
-        },
-      );
-
-      const skewTo = gsap.quickTo(content, "skewX", {
-        duration: 0.5,
-        ease: "power2.out",
-      });
-
-      // Ease speed + skew back to rest once scrolling stops
-      const settle = gsap.delayedCall(0.15, () => {
-        gsap.to(tween, { timeScale: 1, duration: 0.6, overwrite: true });
-        skewTo(0);
-      });
-
-      //  Scroll velocity effect — only while the marquee is on screen
-      ScrollTrigger.create({
-        trigger: container.current,
-        start: "top bottom",
-        end: "bottom top",
-        onToggle: (self) => (self.isActive ? tween.resume() : tween.pause()),
-        onUpdate: (self) => {
-          //  Reduced boost (lower = smoother)
-          const velocityFactor = Math.min(
-            Math.abs(self.getVelocity()) * 0.003,
-            2,
+          //  Slower Base Animation — xPercent keeps the loop seamless after resizes
+          const tween = gsap.fromTo(
+            content,
+            { xPercent: 0 },
+            {
+              xPercent: -50,
+              duration: 35, //  slower (increase = more slow)
+              ease: "none",
+              repeat: -1,
+            },
           );
 
-          // Speed boost
-          gsap.to(tween, {
-            timeScale: 1 + velocityFactor,
+          const skewTo = gsap.quickTo(content, "skewX", {
             duration: 0.5,
-            overwrite: true,
+            ease: "power2.out",
           });
 
-          // Skew effect (direction: 1 down, -1 up)
-          skewTo(self.direction * velocityFactor * -2);
+          // Ease speed + skew back to rest once scrolling stops
+          const settle = gsap.delayedCall(0.15, () => {
+            gsap.to(tween, { timeScale: 1, duration: 0.6, overwrite: true });
+            skewTo(0);
+          });
 
-          settle.restart(true);
-        },
-      });
+          //  Scroll velocity effect — only while the marquee is on screen
+          ScrollTrigger.create({
+            trigger: container.current,
+            start: "top bottom",
+            end: "bottom top",
+            onToggle: (self) =>
+              self.isActive ? tween.resume() : tween.pause(),
+            onUpdate: (self) => {
+              //  Reduced boost (lower = smoother)
+              const velocityFactor = Math.min(
+                Math.abs(self.getVelocity()) * 0.003,
+                2,
+              );
 
-      return () => settle.kill();
-    },
+              // Speed boost
+              gsap.to(tween, {
+                timeScale: 1 + velocityFactor,
+                duration: 0.5,
+                overwrite: true,
+              });
+
+              // Skew effect (direction: 1 down, -1 up)
+              skewTo(self.direction * velocityFactor * -2);
+
+              settle.restart(true);
+            },
+          });
+        }),
+      ),
     { scope: container },
   );
 

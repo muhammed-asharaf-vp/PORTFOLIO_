@@ -7,6 +7,7 @@ import {
   SCRAMBLE_CHARS,
   useGSAP,
 } from "@/lib/gsap";
+import ScrollExit from "@/components/scroll/ScrollExit";
 
 const SKILLS = [
   "React.js",
@@ -82,47 +83,51 @@ export default function Hero({ ready }) {
     { scope: container, dependencies: [ready] },
   );
 
+  // ScrollExit measures the whole section and fades/shrinks it as it scrolls away
   return (
-    <section
-      ref={container}
-      className="min-h-screen flex items-center justify-center px-5 sm:px-8 md:px-12 pt-24 pb-16"
-    >
-      <div className="w-full max-w-6xl text-center md:text-left">
-        <p className="hero-label text-[var(--accent)] font-mono mb-4 md:mb-5 tracking-widest uppercase text-xs md:text-sm">
-          Full Stack Developer
-        </p>
+    <ScrollExit>
+      <section
+        ref={container}
+        className="min-h-screen flex items-center justify-center px-5 sm:px-8 md:px-12 pt-24 pb-16"
+      >
+        <div className="w-full max-w-6xl text-center md:text-left">
+          <p className="hero-label text-[var(--accent)] font-mono mb-4 md:mb-5 tracking-widest uppercase text-xs md:text-sm">
+            Full Stack Developer
+          </p>
 
-        <h1
-          aria-label="Mohamed Asharaf"
-          className="font-display text-[9.5vw] leading-[1] tracking-tight md:text-[min(8vw,7rem)] md:leading-[0.92] md:tracking-tighter font-black uppercase text-[var(--foreground)]"
-        >
-          <span aria-hidden="true" className="block overflow-hidden">
-            {splitChars("MOHAMED")}
-          </span>
-          <span
-            aria-hidden="true"
-            className="block overflow-hidden md:ml-[5vw]"
+          <h1
+            aria-label="Mohamed Asharaf"
+            className="font-display text-[9.5vw] leading-[1] tracking-tight md:text-[min(8vw,7rem)] md:leading-[0.92] md:tracking-tighter font-black uppercase text-[var(--foreground)]"
           >
-            {splitChars("ASHARAF")}
-            <span className="hero-char inline-block text-[var(--accent)]">
-              .
+            <span aria-hidden="true" className="block overflow-hidden">
+              {splitChars("MOHAMED")}
             </span>
-          </span>
-        </h1>
-
-        {/* Equal-width grid on small screens (3×3, then 5+4) so no chip sits alone;
-            one left-aligned row on desktop */}
-        <ul className="mt-10 md:mt-12 grid grid-cols-3 gap-2 md:w-fit md:grid-cols-5 md:gap-2.5 lg:flex lg:flex-wrap lg:gap-3">
-          {SKILLS.map((tech) => (
-            <li
-              key={tech}
-              className="hero-pill text-center whitespace-nowrap px-2 py-2.5 md:px-4 xl:px-5 border border-[var(--border-color)] rounded-full font-mono text-[11px] xl:text-xs uppercase tracking-wider md:hover:text-[var(--background)] md:hover:bg-[var(--accent)] md:hover:border-[var(--accent)] transition-colors cursor-default"
+            <span
+              aria-hidden="true"
+              className="block overflow-hidden md:ml-[5vw]"
             >
-              {tech}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
+              {splitChars("ASHARAF")}
+              <span className="hero-char inline-block text-[var(--accent)]">
+                .
+              </span>
+            </span>
+          </h1>
+
+          {/* 9 chips: an equal-width 3×3 grid until there's room for all of them on
+            one row (xl+), so no row is ever left with a stray chip. On phones the
+            text scales with the viewport so "TAILWIND CSS" fits even at 320px */}
+          <ul className="mt-10 md:mt-12 grid grid-cols-3 gap-2 md:gap-2.5 md:max-w-xl xl:max-w-none xl:w-fit xl:flex xl:flex-nowrap xl:gap-2">
+            {SKILLS.map((tech) => (
+              <li
+                key={tech}
+                className="hero-pill text-center whitespace-nowrap px-1.5 sm:px-2 py-2.5 md:px-4 border border-[var(--border-color)] rounded-full font-mono text-[length:clamp(9px,2.9vw,11px)] md:text-xs xl:text-[11px] 2xl:text-xs uppercase tracking-normal sm:tracking-wider md:hover:text-[var(--background)] md:hover:bg-[var(--accent)] md:hover:border-[var(--accent)] transition-colors cursor-default"
+              >
+                {tech}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    </ScrollExit>
   );
 }

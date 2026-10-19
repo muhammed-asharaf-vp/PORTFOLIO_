@@ -1,6 +1,6 @@
 "use client";
 import { useRef } from "react";
-import { gsap, useGSAP } from "@/lib/gsap";
+import { gsap, useGSAP, whenIdle } from "@/lib/gsap";
 import SplitReveal from "@/components/text/SplitReveal";
 import ScrambleIn from "@/components/text/ScrambleIn";
 import ScrollHighlight from "@/components/text/ScrollHighlight";
@@ -56,56 +56,60 @@ const SPECS = [
 export default function About() {
   const container = useRef(null);
 
+  // Deferred to an idle slot after hydration (see whenIdle in lib/gsap)
   useGSAP(
-    () => {
-      const mm = gsap.matchMedia();
+    (_, contextSafe) =>
+      whenIdle(
+        contextSafe(() => {
+          const mm = gsap.matchMedia();
 
-      // Desktop and mobile layouts both exist in the DOM; only animate the
-      // visible one so hidden copies don't create dead ScrollTriggers.
-      mm.add(
-        {
-          desktop:
-            "(min-width: 768px) and (prefers-reduced-motion: no-preference)",
-          mobile:
-            "(max-width: 767px) and (prefers-reduced-motion: no-preference)",
-        },
-        (ctx) => {
-          const scope = ctx.conditions.desktop
-            ? ".about-desktop"
-            : ".about-mobile";
+          // Desktop and mobile layouts both exist in the DOM; only animate the
+          // visible one so hidden copies don't create dead ScrollTriggers.
+          mm.add(
+            {
+              desktop:
+                "(min-width: 768px) and (prefers-reduced-motion: no-preference)",
+              mobile:
+                "(max-width: 767px) and (prefers-reduced-motion: no-preference)",
+            },
+            (ctx) => {
+              const scope = ctx.conditions.desktop
+                ? ".about-desktop"
+                : ".about-mobile";
 
-          // Specs animation
-          gsap.utils.toArray(`${scope} .spec-row`).forEach((row, i) => {
-            gsap.from(row, {
-              scrollTrigger: {
-                trigger: row,
-                start: "top 88%",
-                toggleActions: "play none none reverse",
-              },
-              y: 25,
-              opacity: 0,
-              duration: 0.7,
-              delay: i * 0.08,
-              ease: "power3.out",
-            });
+              // Specs animation
+              gsap.utils.toArray(`${scope} .spec-row`).forEach((row, i) => {
+                gsap.from(row, {
+                  scrollTrigger: {
+                    trigger: row,
+                    start: "top 88%",
+                    toggleActions: "play none none reverse",
+                  },
+                  y: 25,
+                  opacity: 0,
+                  duration: 0.7,
+                  delay: i * 0.08,
+                  ease: "power3.out",
+                });
 
-            const line = row.querySelector(".divider-line");
-            if (line) {
-              gsap.from(line, {
-                scrollTrigger: {
-                  trigger: row,
-                  start: "top 88%",
-                },
-                scaleX: 0,
-                transformOrigin: "left",
-                duration: 1,
-                ease: "expo.out",
+                const line = row.querySelector(".divider-line");
+                if (line) {
+                  gsap.from(line, {
+                    scrollTrigger: {
+                      trigger: row,
+                      start: "top 88%",
+                    },
+                    scaleX: 0,
+                    transformOrigin: "left",
+                    duration: 1,
+                    ease: "expo.out",
+                  });
+                }
               });
-            }
-          });
-        },
-      );
-    },
+            },
+          );
+        }),
+      ),
     { scope: container },
   );
 

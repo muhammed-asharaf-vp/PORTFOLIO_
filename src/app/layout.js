@@ -1,12 +1,15 @@
-import { JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
-// Self-hosted at build time by next/font
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
+// JetBrains Mono (OFL), latin subset, variable 100–800. Kept in the repo instead of
+// next/font/google so dev and builds never fall back to Arial when Google Fonts
+// can't be reached (the wider fallback overflowed the hero skill pills).
+const jetbrainsMono = localFont({
+  src: "./fonts/JetBrainsMono-latin.woff2",
+  weight: "100 800",
   variable: "--font-jetbrains",
   display: "swap",
 });

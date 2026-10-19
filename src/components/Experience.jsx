@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
-import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
+import { gsap, ScrollTrigger, useGSAP, whenIdle } from "@/lib/gsap";
 import SplitReveal from "@/components/text/SplitReveal";
 import ScrambleIn from "@/components/text/ScrambleIn";
 import CountUp from "@/components/text/CountUp";
@@ -139,64 +139,68 @@ export default function Experience() {
     });
   };
 
+  // Deferred to an idle slot after hydration (see whenIdle in lib/gsap)
   useGSAP(
-    () => {
-      const mm = gsap.matchMedia();
+    (_, contextSafe) =>
+      whenIdle(
+        contextSafe(() => {
+          const mm = gsap.matchMedia();
 
-      mm.add(
-        {
-          desktop:
-            "(min-width: 768px) and (prefers-reduced-motion: no-preference)",
-          mobile:
-            "(max-width: 767px) and (prefers-reduced-motion: no-preference)",
-        },
-        (ctx) => {
-          if (ctx.conditions.mobile) {
-            // Panel, then the whole carousel, slide up once
-            gsap.from(".exp-panel, .exp-carousel", {
-              y: 50,
-              opacity: 0,
-              duration: 0.9,
-              stagger: 0.15,
-              ease: "power3.out",
-              scrollTrigger: { trigger: ".exp-panel", start: "top 85%" },
-            });
-            return;
-          }
-
-          // Progress line fills as you scroll through the section
-          gsap.fromTo(
-            ".exp-progress",
-            { scaleY: 0 },
+          mm.add(
             {
-              scaleY: 1,
-              ease: "none",
-              scrollTrigger: {
-                trigger: container.current,
-                start: "top 60%",
-                end: "bottom 80%",
-                scrub: 0.6,
-              },
+              desktop:
+                "(min-width: 768px) and (prefers-reduced-motion: no-preference)",
+              mobile:
+                "(max-width: 767px) and (prefers-reduced-motion: no-preference)",
+            },
+            (ctx) => {
+              if (ctx.conditions.mobile) {
+                // Panel, then the whole carousel, slide up once
+                gsap.from(".exp-panel, .exp-carousel", {
+                  y: 50,
+                  opacity: 0,
+                  duration: 0.9,
+                  stagger: 0.15,
+                  ease: "power3.out",
+                  scrollTrigger: { trigger: ".exp-panel", start: "top 85%" },
+                });
+                return;
+              }
+
+              // Progress line fills as you scroll through the section
+              gsap.fromTo(
+                ".exp-progress",
+                { scaleY: 0 },
+                {
+                  scaleY: 1,
+                  ease: "none",
+                  scrollTrigger: {
+                    trigger: container.current,
+                    start: "top 60%",
+                    end: "bottom 80%",
+                    scrub: 0.6,
+                  },
+                },
+              );
+
+              // Cards rise in, staggered per batch as they enter the viewport
+              gsap.set(".exp-card", { y: 60, opacity: 0 });
+              ScrollTrigger.batch(".exp-card", {
+                start: "top 88%",
+                onEnter: (batch) =>
+                  gsap.to(batch, {
+                    y: 0,
+                    opacity: 1,
+                    duration: 0.8,
+                    stagger: 0.1,
+                    ease: "power3.out",
+                    overwrite: true,
+                  }),
+              });
             },
           );
-
-          // Cards rise in, staggered per batch as they enter the viewport
-          gsap.set(".exp-card", { y: 60, opacity: 0 });
-          ScrollTrigger.batch(".exp-card", {
-            start: "top 88%",
-            onEnter: (batch) =>
-              gsap.to(batch, {
-                y: 0,
-                opacity: 1,
-                duration: 0.8,
-                stagger: 0.1,
-                ease: "power3.out",
-                overwrite: true,
-              }),
-          });
-        },
-      );
-    },
+        }),
+      ),
     { scope: container },
   );
 
