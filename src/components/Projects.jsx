@@ -216,7 +216,7 @@ function Shot({ p }) {
 
 function Frame({ p }) {
   return (
-    <div className="relative w-full rounded-xl overflow-hidden border border-[var(--border-color)] bg-[var(--background)] shadow-[0_30px_80px_-30px_rgba(0,0,0,0.6)]">
+    <div className="relative w-full rounded-xl overflow-hidden border border-[var(--border-color)] bg-[var(--background)]">
       <div className="h-7 px-3 flex items-center gap-2 border-b border-[var(--border-color)] bg-[var(--card-bg)]">
         <span className="w-2 h-2 rounded-full bg-[var(--foreground)] opacity-25" />
         <span className="w-2 h-2 rounded-full bg-[var(--foreground)] opacity-25" />
