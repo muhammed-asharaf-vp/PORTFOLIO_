@@ -19,6 +19,8 @@ export default function CustomCursor() {
     let x = 0;
     let y = 0;
     let rafId = 0;
+    let moved = false;
+    cursor.style.opacity = "0"; // hidden until the pointer first moves
 
     const loop = () => {
       x += (mouseX - x) * SPEED;
@@ -36,6 +38,12 @@ export default function CustomCursor() {
     const move = (e) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
+      if (!moved) {
+        moved = true;
+        x = mouseX;
+        y = mouseY;
+        cursor.style.opacity = "";
+      }
       if (!rafId) rafId = requestAnimationFrame(loop);
     };
 

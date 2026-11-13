@@ -31,7 +31,7 @@ export const metadata = {
   },
 
   description:
-    "Portfolio of Mohamed Asharaf VP, a Front-End Developer from Tirur, Kerala. Specialized in React, Next.js, GSAP animations, Three.js, and modern UI development.",
+    "Portfolio of Mohamed Asharaf VP, a Front-End Developer from Palakkad, Kerala. Specialized in React, Next.js, GSAP animations, Three.js, and modern UI development.",
 
   keywords: [
     "Mohamed Asharaf VP",
@@ -89,16 +89,22 @@ export const metadata = {
 export const viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#050505" },
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-  ],
+  // The site starts light and ignores the OS theme, so the browser chrome stays white too
+  themeColor: "#ffffff",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={jetbrainsMono.variable} suppressHydrationWarning>
       <head>
+        {/* Preloader already played this session (or reduced motion): hide it from the very
+            first paint so a refresh never flashes the overlay before React hydrates. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "document.documentElement.setAttribute('data-js','1');try{if(sessionStorage.getItem('preloader_done')==='true'||matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.setAttribute('data-pl','done')}}catch(e){}",
+          }}
+        />
         <link rel="preconnect" href="https://api.fontshare.com" />
         <link
           rel="preconnect"
@@ -110,7 +116,7 @@ export default function RootLayout({ children }) {
         ))}
       </head>
       <body className="antialiased">
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           <SmoothScroll>{children}</SmoothScroll>
         </ThemeProvider>
       </body>

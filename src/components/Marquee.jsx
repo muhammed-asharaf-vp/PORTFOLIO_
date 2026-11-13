@@ -56,12 +56,15 @@ export default function Marquee() {
           });
 
           //  Scroll velocity effect — only while the marquee is on screen
-          ScrollTrigger.create({
+          const st = ScrollTrigger.create({
             trigger: container.current,
             start: "top bottom",
             end: "bottom top",
-            onToggle: (self) =>
-              self.isActive ? tween.resume() : tween.pause(),
+            onToggle: (self) => {
+              if (self.isActive) tween.resume();
+              else tween.pause();
+              container.current?.classList.toggle("marquee-paused", !self.isActive);
+            },
             onUpdate: (self) => {
               //  Reduced boost (lower = smoother)
               const velocityFactor = Math.min(
@@ -82,6 +85,12 @@ export default function Marquee() {
               settle.restart(true);
             },
           });
+
+          // Off screen at load: don't run the loop (or the divider spin) until it's reached
+          if (!st.isActive) {
+            tween.pause();
+            container.current.classList.add("marquee-paused");
+          }
         }),
       ),
     { scope: container },

@@ -1,7 +1,7 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FiArrowUpRight, FiDownload, FiMinus, FiPlus } from "react-icons/fi";
-import { gsap, ScrollTrigger, useGSAP, whenIdle } from "@/lib/gsap";
+import { gsap, prefersReducedMotion, ScrollTrigger, useGSAP, whenIdle } from "@/lib/gsap";
 import SplitReveal from "@/components/text/SplitReveal";
 import ScrambleIn from "@/components/text/ScrambleIn";
 import RollText from "@/components/text/RollText";
@@ -58,9 +58,13 @@ export default function Experience() {
   const hoverRef = useRef(false); // pointer is over the list (scroll focus yields)
   const previewOK = useRef(false); // desktop + fine pointer + motion allowed
 
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [active, setActive] = useState(null); // focused row
   const [previewOn, setPreviewOn] = useState(false);
+  const openRef = useRef(false); // scroll-focus only matters while the panel is open
+  useEffect(() => {
+    openRef.current = open;
+  }, [open]);
 
   useGSAP(
     (_, contextSafe) =>
@@ -82,25 +86,6 @@ export default function Experience() {
               scrollTrigger: { trigger: q(".exp-top-rule")[0], start: "top 92%", once: true },
             });
 
-            const st = { trigger: list, start: "top 85%", once: true };
-            gsap.from(q("[data-row]"), {
-              y: 28,
-              opacity: 0,
-              duration: 0.9,
-              ease: "power3.out",
-              stagger: 0.09,
-              clearProps: "opacity,transform",
-              scrollTrigger: st,
-            });
-            gsap.from(q(".row-rule"), {
-              scaleX: 0,
-              transformOrigin: "left",
-              duration: 1.1,
-              ease: "expo.out",
-              stagger: 0.09,
-              scrollTrigger: st,
-            });
-
             // Scroll focus: the row being read lights up (pointer hover takes over)
             q("[data-row]").forEach((row, i) =>
               ScrollTrigger.create({
@@ -108,7 +93,7 @@ export default function Experience() {
                 start: "top 62%",
                 end: "bottom 62%",
                 onToggle: (self) => {
-                  if (self.isActive && !hoverRef.current) setActive(i);
+                  if (self.isActive && !hoverRef.current && openRef.current) setActive(i);
                 },
               })
             );
@@ -117,7 +102,7 @@ export default function Experience() {
               start: "top 62%",
               end: "bottom 62%",
               onToggle: (self) => {
-                if (!self.isActive && !hoverRef.current) setActive(null);
+                if (!self.isActive && !hoverRef.current && openRef.current) setActive(null);
               },
             });
           });
@@ -164,6 +149,40 @@ export default function Experience() {
     { scope: container }
   );
 
+  // The work log is closed by default: its rows stagger in each time it opens
+  useGSAP(
+    () => {
+      if (!open || prefersReducedMotion()) return;
+      gsap.fromTo(
+        "[data-row]",
+        { y: 24, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.7,
+          ease: "power3.out",
+          stagger: 0.07,
+          delay: 0.15,
+          clearProps: "opacity,transform",
+        },
+      );
+      gsap.fromTo(
+        ".row-rule",
+        { scaleX: 0 },
+        {
+          scaleX: 1,
+          transformOrigin: "left",
+          duration: 0.9,
+          ease: "expo.out",
+          stagger: 0.07,
+          delay: 0.15,
+          clearProps: "transform",
+        },
+      );
+    },
+    { scope: container, dependencies: [open] },
+  );
+
   const shot = active !== null ? WORK[active].img : null;
   const showPreview = previewOn && !!shot;
 
@@ -186,7 +205,7 @@ export default function Experience() {
     >
       <div className="max-w-[1800px] mx-auto px-5 sm:px-8 md:px-12 pt-20 md:pt-32 pb-0">
         {/* ---------------- HEADER ---------------- */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-8 mb-10 md:mb-14">
+        <div className="flex flex-col 2xl:flex-row 2xl:items-end justify-between gap-6 2xl:gap-8 mb-10 md:mb-14">
           <div>
             <p className="text-[11px] md:text-sm font-mono text-[var(--accent)] uppercase tracking-[0.3em] mb-3 flex items-center gap-3">
               <span className="w-2 h-2 bg-[var(--accent)] rounded-full animate-pulse" />
@@ -198,7 +217,7 @@ export default function Experience() {
               effect="flip"
               stagger={0.05}
               duration={1.1}
-              className="font-display text-[7vw] md:text-5xl lg:text-7xl xl:text-8xl font-black uppercase text-[var(--foreground)] tracking-tighter leading-[0.9]"
+              className="exp-title font-display font-black uppercase text-[var(--foreground)] tracking-[0.01em] leading-[1.05] whitespace-nowrap"
             >
               Experience
               <span className="text-[var(--accent)]">.</span>
@@ -208,7 +227,7 @@ export default function Experience() {
           <a
             href="/ashraf%20full%20stack.pdf"
             download="Mohamed_Asharaf_Resume.pdf"
-            className="cursor-dot-zone group self-start md:self-auto inline-flex items-center gap-3 px-6 py-3 rounded-full border border-[var(--accent)] text-[var(--accent)] font-mono text-[11px] uppercase tracking-[0.2em] hover:bg-[var(--accent)] hover:text-[var(--background)] transition-colors"
+            className="cursor-dot-zone group self-start 2xl:self-auto inline-flex items-center gap-3 px-6 py-3 rounded-full border border-[var(--accent)] text-[var(--accent)] font-mono text-[11px] uppercase tracking-[0.2em] hover:bg-[var(--accent)] hover:text-[var(--background)] transition-colors"
           >
             <RollText>Download resume</RollText>
             <FiDownload aria-hidden="true" className="text-base" />
@@ -223,7 +242,7 @@ export default function Experience() {
           aria-expanded={open}
           aria-controls="exp-toruss-panel"
           onClick={() => setOpen((v) => !v)}
-          className="cursor-dot-zone group w-full text-left py-6 md:py-8 grid grid-cols-[1fr_auto] md:grid-cols-[auto_1fr_auto_auto] items-center gap-x-6 lg:gap-x-12 gap-y-3"
+          className="cursor-dot-zone group w-full text-left py-6 md:py-8 grid grid-cols-[minmax(0,1fr)_auto] lg:grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-x-4 sm:gap-x-6 lg:gap-x-8 xl:gap-x-12 gap-y-3"
         >
           <SplitReveal
             as="span"
@@ -231,30 +250,30 @@ export default function Experience() {
             effect="tilt"
             stagger={0.04}
             duration={1.1}
-            className="block font-display text-6xl md:text-7xl xl:text-8xl font-black tracking-tighter leading-[0.95] text-[var(--foreground)] group-hover:text-[var(--accent)] transition-colors duration-300"
+            className="exp-wordmark block whitespace-nowrap font-display font-black tracking-[0.01em] leading-[1.1] text-[var(--foreground)] group-hover:text-[var(--accent)] transition-colors duration-300"
           >
             Toruss
           </SplitReveal>
 
-          <span className="col-span-2 md:col-span-1 md:col-start-2 row-start-2 md:row-start-1 flex flex-col gap-1">
+          <span className="col-span-2 lg:col-span-1 lg:col-start-2 row-start-2 lg:row-start-1 min-w-0 flex flex-col gap-1">
             <span className="text-base md:text-lg opacity-60">Creative Agency</span>
             <span className="font-mono text-[11px] uppercase tracking-[0.25em] text-[var(--accent)]">
               Full Stack Developer
             </span>
           </span>
 
-          <span className="hidden md:block font-mono text-xs uppercase tracking-[0.25em]">
+          <span className="hidden lg:block whitespace-nowrap font-mono text-xs uppercase tracking-[0.25em]">
             2026 — Present
           </span>
 
           <span
             aria-hidden="true"
-            className="row-start-1 col-start-2 md:col-start-4 w-10 h-10 md:w-12 md:h-12 rounded-full border border-[var(--border-color)] flex items-center justify-center group-hover:border-[var(--accent)] group-hover:text-[var(--accent)] transition-colors"
+            className="row-start-1 col-start-2 lg:col-start-4 shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full border border-[var(--border-color)] flex items-center justify-center group-hover:border-[var(--accent)] group-hover:text-[var(--accent)] transition-colors"
           >
             {open ? <FiMinus /> : <FiPlus />}
           </span>
 
-          <span className="md:hidden col-span-2 font-mono text-[11px] uppercase tracking-[0.25em] opacity-70">
+          <span className="lg:hidden col-span-2 font-mono text-[11px] uppercase tracking-[0.25em] opacity-70">
             2026 — Present
           </span>
         </button>
@@ -310,7 +329,7 @@ export default function Experience() {
 
                       <ScrambleIn
                         as="h3"
-                        className={`font-display text-xl lg:text-2xl font-black uppercase tracking-tight leading-tight text-[var(--foreground)] ${shift}`}
+                        className={`min-w-0 break-words font-display text-lg sm:text-xl lg:text-2xl font-black uppercase tracking-tight leading-tight text-[var(--foreground)] ${shift}`}
                       >
                         {p.title}
                       </ScrambleIn>
@@ -360,7 +379,7 @@ export default function Experience() {
             {shot && (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={`/projects/${shot}.jpg?v=2`}
+                src={`/projects/${shot}.jpg?v=3`}
                 alt=""
                 decoding="async"
                 draggable={false}

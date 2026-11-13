@@ -194,15 +194,15 @@ function Mock({ type }) {
   );
 }
 
-function Shot({ p, eager = false }) {
+function Shot({ p }) {
   return (
     <div className="relative w-full h-full overflow-hidden bg-[var(--card-bg)]">
       {p.img ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={`/projects/${p.img}.jpg?v=2`}
+          src={`/projects/${p.img}.jpg?v=3`}
           alt={`${p.title} website screenshot`}
-          loading={eager ? "eager" : "lazy"}
+          loading="lazy"
           decoding="async"
           draggable={false}
           className="absolute inset-0 w-full h-full object-fill"
@@ -214,7 +214,7 @@ function Shot({ p, eager = false }) {
   );
 }
 
-function Frame({ p, eager }) {
+function Frame({ p }) {
   return (
     <div className="relative w-full rounded-xl overflow-hidden border border-[var(--border-color)] bg-[var(--background)] shadow-[0_30px_80px_-30px_rgba(0,0,0,0.6)]">
       <div className="h-7 px-3 flex items-center gap-2 border-b border-[var(--border-color)] bg-[var(--card-bg)]">
@@ -224,10 +224,10 @@ function Frame({ p, eager }) {
         <span className="ml-3 font-mono text-[10px] tracking-widest opacity-50 truncate">{p.url}</span>
       </div>
       <div className="relative w-full aspect-[1903/978]">
-        <Shot p={p} eager={eager} />
+        <Shot p={p} />
         {/* scanlines */}
         <div
-          className="pointer-events-none absolute inset-0 opacity-[0.05] mix-blend-overlay"
+          className="pointer-events-none absolute inset-0 opacity-[0.04]"
           style={{
             backgroundImage:
               "repeating-linear-gradient(0deg, var(--foreground) 0 1px, transparent 1px 3px)",
@@ -253,7 +253,7 @@ function Tags({ tags }) {
   );
 }
 
-function MobileCard({ p, i, eager }) {
+function MobileCard({ p, i }) {
   const [more, setMore] = useState(false);
   const tagList = allTags(p);
   return (
@@ -265,7 +265,7 @@ function MobileCard({ p, i, eager }) {
         <span className="text-[var(--accent)]">{p.kind}</span>
       </div>
       <div data-mshot className="mt-3 w-full">
-        <Frame p={p} eager={eager} />
+        <Frame p={p} />
       </div>
       <h3 className="mt-5 font-display font-black uppercase tracking-tighter text-2xl leading-[0.95]">
         {p.title}
@@ -592,7 +592,7 @@ export default function Projects() {
               className="absolute left-1/2 top-1/2 w-[46vw] max-w-[860px] will-change-transform [backface-visibility:hidden]"
               style={{ left: "62%" }}
             >
-              <Frame p={p} eager={i < 2} />
+              <Frame p={p} />
             </div>
           ))}
         </div>
@@ -678,7 +678,7 @@ export default function Projects() {
       <ol className="lg:hidden motion-reduce:!block max-w-[1800px] mx-auto px-5 sm:px-8 md:px-12 pb-20 space-y-16">
         {PROJECTS.map((p, i) => (
           <li key={p.title}>
-            <MobileCard p={p} i={i} eager={i === 0} />
+            <MobileCard p={p} i={i} />
           </li>
         ))}
       </ol>

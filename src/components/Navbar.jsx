@@ -1,6 +1,6 @@
 "use client";
 import { useTheme } from "next-themes";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { FiSun, FiMoon, FiDownload, FiMenu, FiX } from "react-icons/fi";
 import Link from "next/link";
 import { gsap, useGSAP } from "@/lib/gsap";
@@ -50,6 +50,28 @@ export default function Navbar({ ready = true }) {
     );
   }, [isMobileMenuOpen]);
 
+  // Highlight the tab of the section that is currently in view while scrolling
+  useEffect(() => {
+    const sections = NAV_LINKS.map((l) => document.querySelector(l.href)).filter(Boolean);
+    if (!sections.length) return;
+    const update = () => {
+      const line = window.innerHeight * 0.4;
+      let current = "";
+      for (const el of sections) {
+        const r = el.getBoundingClientRect();
+        if (r.top <= line && r.bottom > line) current = "#" + el.id;
+      }
+      setActiveTab((prev) => (prev === current ? prev : current));
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, []);
+
   const handleScroll = (e, href) => {
     e.preventDefault();
     setActiveTab(href);
@@ -80,7 +102,7 @@ export default function Navbar({ ready = true }) {
   return (
     <nav
       ref={navRef}
-      className="fixed top-4 md:top-6 left-0 w-full z-50 flex flex-col items-center px-4"
+      className="nav-intro fixed top-4 md:top-6 left-0 w-full z-50 flex flex-col items-center px-4"
     >
       <div className="relative z-50 flex items-center justify-between w-full max-w-sm md:max-w-xl p-1.5 pl-4 md:pl-5 bg-[var(--background)]/80 backdrop-blur-xl border border-[var(--border-color)] rounded-full shadow-2xl ring-1 ring-[var(--foreground)]/5">
         {/* LOGO */}

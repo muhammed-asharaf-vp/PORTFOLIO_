@@ -36,12 +36,19 @@ export default function Hero({ ready }) {
       // Wait until the preloader is gone, otherwise the intro plays hidden under it
       if (!ready) return;
 
-      if (prefersReducedMotion()) return;
-
       const label = container.current.querySelector(".hero-label");
+
+      // Elements are hidden by CSS until now (see globals.css). Make them visible; the
+      // tweens below then start from their hidden state, so nothing flashes on refresh.
+      gsap.set([".hero-char", ".hero-pill"], { opacity: 1 });
+      if (prefersReducedMotion()) {
+        gsap.set(label, { opacity: 1 });
+        return;
+      }
 
       gsap
         .timeline({ delay: 0.1 })
+        .set(label, { opacity: 1 }, 0.15)
         // Letters rise out of each line's mask with a slight tilt
         .from(".hero-char", {
           yPercent: 115,
@@ -88,7 +95,7 @@ export default function Hero({ ready }) {
     <ScrollExit>
       <section
         ref={container}
-        className="min-h-screen flex items-center justify-center px-5 sm:px-8 md:px-12 pt-24 pb-16"
+        className="min-h-svh flex items-center justify-center px-5 sm:px-8 md:px-12 pt-24 pb-16"
       >
         <div className="w-full max-w-6xl text-center md:text-left">
           <p className="hero-label text-[var(--accent)] font-mono mb-4 md:mb-5 tracking-widest uppercase text-xs md:text-sm">
